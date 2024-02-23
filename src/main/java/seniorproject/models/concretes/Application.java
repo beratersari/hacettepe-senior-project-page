@@ -1,7 +1,5 @@
-package com.example.bitirmeprojesi.models.concretes;
+package seniorproject.models.concretes;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 

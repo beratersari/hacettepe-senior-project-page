@@ -1,4 +1,4 @@
-package com.example.bitirmeprojesi.models.concretes;
+package seniorproject.models.concretes;
 
 public enum Status {
     OFFERED,

@@ -1,7 +1,7 @@
-package com.example.bitirmeprojesi.api.controllers;
+package seniorproject.api.controllers;
 
-import com.example.bitirmeprojesi.business.abstracts.ProjectService;
-import com.example.bitirmeprojesi.models.concretes.Project;
+import seniorproject.business.abstracts.ProjectService;
+import seniorproject.models.concretes.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

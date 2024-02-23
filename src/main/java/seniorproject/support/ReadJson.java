@@ -1,9 +1,9 @@
-package com.example.bitirmeprojesi.support;
+package seniorproject.support;
 
-import com.example.bitirmeprojesi.models.concretes.Cluster;
-import com.example.bitirmeprojesi.models.concretes.Professor;
-import com.example.bitirmeprojesi.models.concretes.Project;
-import com.example.bitirmeprojesi.models.concretes.Student;
+import seniorproject.models.concretes.Cluster;
+import seniorproject.models.concretes.Professor;
+import seniorproject.models.concretes.Project;
+import seniorproject.models.concretes.Student;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -1,4 +1,4 @@
-package com.example.bitirmeprojesi.dataAccess;
+package seniorproject.dataAccess;
 
 public class SearchRequest {
     private String name;
