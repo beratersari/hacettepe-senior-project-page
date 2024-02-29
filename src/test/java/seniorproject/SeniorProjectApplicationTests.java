@@ -1,10 +1,10 @@
-package com.example.bitirmeprojesi;
+package seniorproject;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BitirmeprojesiApplicationTests {
+class SeniorProjectApplicationTests {
 
 	@Test
 	void contextLoads() {
