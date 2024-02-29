@@ -22,6 +22,6 @@ public class Professor {
     @Column(nullable = false)
     private String password;
 
-    @OneToMany(mappedBy = "professor")
+    @ManyToMany(mappedBy = "professors")
     private List<Project> projects;
 }

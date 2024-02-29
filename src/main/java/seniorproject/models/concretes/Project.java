@@ -2,6 +2,7 @@ package seniorproject.models.concretes;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -23,9 +24,13 @@ public class Project {
     private String reportLink;
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "professor_id")
-    private Professor professor;
+    @ManyToMany
+    @JoinTable(
+            name = "project_professor",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "professor_id")
+    )
+    private List<Professor> professors;
 
     @ManyToOne
     @JoinColumn(name = "group_id")
