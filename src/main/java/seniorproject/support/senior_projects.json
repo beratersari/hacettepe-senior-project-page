@@ -580,14 +580,5 @@
         "abstract": "This project will rank websites’ visual similarity through deep embeddings. Deep embeddings are representations of webpage screenshots by deep learning models such as convolutional neural networks. Siamese networks will be used to create a similarity scıre between web pages. 9000 web pages in 10 categories will be collected. Screenshots of the web pages will be captured by wkhtmltoimage in the data collection phase. Calculated similarity scores will be compared with the SWPS40 dataset. SWPS40 is a ground truth dataset to verify ranking results on web page similarity. The web page pairs in the dataset were scored by 312 different participants. ANR5 and ANR10 rankings will be used when comparing the calculated results with the SWPS40 dataset. Similarity rankings could be used to prevent website design plagiarism.",
         "report_link":"",
         "project_term": "2020-2021"
-    },{
-        "project_name": "",
-        "students": [],
-        "supervisor": [],
-        "youtube_link": "",
-        "website":"",
-        "abstract": "",
-        "report_link":"",
-        "project_term": "2020-2021"
     }
 ]
