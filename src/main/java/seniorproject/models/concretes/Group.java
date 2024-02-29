@@ -7,21 +7,18 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "clusters")
-public class Cluster {
+@Table(name = "groups")
+public class Group {
     @Id
     @GeneratedValue
     private long id;
 
-    @Column(nullable = false)
-    private String name;
-
-    @ManyToMany(mappedBy = "clusters")
+    @ManyToMany(mappedBy = "groups")
     private List<Student> students;
 
-    @OneToMany(mappedBy = "cluster", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private List<Application> applications;
 
-    @OneToMany(mappedBy = "cluster", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
     private List<Project> projects;
 }

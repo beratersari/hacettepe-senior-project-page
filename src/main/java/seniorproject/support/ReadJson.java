@@ -1,6 +1,6 @@
 package seniorproject.support;
 
-import seniorproject.models.concretes.Cluster;
+import seniorproject.models.concretes.Group;
 import seniorproject.models.concretes.Professor;
 import seniorproject.models.concretes.Project;
 import seniorproject.models.concretes.Student;
@@ -21,7 +21,7 @@ public class ReadJson {
     private static long projectIdCounter = 1;  // Counter for project IDs
     private Connection connection;
     public static void main(String[] args) {
-        String filePath = "/Users/erturkmens/hacettepe-senior-project-page/src/main/java/com/example/bitirmeprojesi/support/senior_projects.json";
+        String filePath = "/Users/erturkmens/hacettepe-senior-project-page/src/main/java/seniorproject/support/senior_projects.json";
 
         try {
             File jsonFile = new File(filePath);
@@ -50,19 +50,19 @@ public class ReadJson {
                     project.setReportLink(reportLink);
                     project.setDescription(abstractText);
 
-                    Cluster group = new Cluster();
-                    group.setId(generateGroupId());  // Generate unique ID for the group
+                    Group group = new Group();
+                    group.setId(generateGroupId());
                     List<Student> studentList = new ArrayList<>();
                     for (String student : students) {
                         Student studentObject = new Student();
-                        studentObject.setId(generateStudentId());  // Generate unique ID for the student
+                        studentObject.setId(generateStudentId());
                         studentObject.setName(student);
                         studentObject.setEmail(student + "@cs.hacettepe.edu.tr");
                         studentObject.setPassword("123456");
                         studentList.add(studentObject);
                     }
                     group.setStudents(studentList);
-                    project.setCluster(group);
+                    project.setGroup(group);
 
                     Professor professor = new Professor();
                     professor.setName(supervisor);
@@ -72,10 +72,9 @@ public class ReadJson {
 
 
                     try {
-                        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO cluster (ID, NAME)  VALUES (?, ?)");
+                        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO groups (ID)  VALUES (?)");
                         preparedStatement.setLong(1, group.getId());
-                        preparedStatement.setString(2, group.getName());
-                        preparedStatement = connection.prepareStatement("SELECT id FROM professor WHERE email = ?");
+                        preparedStatement = connection.prepareStatement("SELECT id FROM professors WHERE email = ?");
                         preparedStatement.setString(1, professor.getEmail());
                         ResultSet resultSet = preparedStatement.executeQuery();
                         if (resultSet.next()) {
@@ -92,7 +91,7 @@ public class ReadJson {
                         project.setProfessor(professor);
 
                         // Insert students with generated IDs
-                        preparedStatement = connection.prepareStatement("INSERT INTO student (id, name, email, password) VALUES (?, ?, ?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO students (id, name, email, password) VALUES (?, ?, ?, ?)");
                         for (Student student : studentList) {
                             preparedStatement.setLong(1, student.getId());
                             preparedStatement.setString(2, student.getName());
@@ -101,7 +100,7 @@ public class ReadJson {
                             preparedStatement.executeUpdate();
                         }
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO student_cluster (student_id, cluster_id) VALUES (?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO student_group (student_id, group_id) VALUES (?, ?)");
 
                         for (Student student : studentList) {
                             preparedStatement.setLong(1, student.getId());
@@ -110,7 +109,7 @@ public class ReadJson {
                         }
 
                         // Insert professor with generated ID
-                        preparedStatement = connection.prepareStatement("INSERT INTO professor (id, name, email, password) VALUES (?, ?, ?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO professors (id, name, email, password) VALUES (?, ?, ?, ?)");
                         preparedStatement.setLong(1, professor.getId());
                         preparedStatement.setString(2, professor.getName());
                         preparedStatement.setString(3, professor.getEmail());
@@ -118,7 +117,7 @@ public class ReadJson {
                         preparedStatement.executeUpdate();
 
                         // Insert project with generated IDs
-                        preparedStatement = connection.prepareStatement("INSERT INTO project (id, name, term, youtube_link, report_link, professor_id, cluster_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO projects (id, name, term, youtube_link, report_link, professor_id, group_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
                         preparedStatement.setLong(1, project.getId());
                         preparedStatement.setString(2, project.getName());
                         preparedStatement.setString(3, project.getTerm());
@@ -140,22 +139,6 @@ public class ReadJson {
         }
 
     }
-    private Long getExistingProfessorIdByEmail(String professorEmail) {
-        try {
-            if (this.connection == null || this.connection.isClosed()) {
-                this.connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "berAt20190909");
-            }
-
-
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        // Professor doesn't exist
-        return null;
-    }
-    // Helper methods to generate sequential IDs
     private static synchronized long generateGroupId() {
         return groupIdCounter++;
     }

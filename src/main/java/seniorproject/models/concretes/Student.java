@@ -20,10 +20,10 @@ public class Student {
     private String password;
     @ManyToMany
     @JoinTable(
-            name = "student_cluster",
+            name = "student_group",
             joinColumns = @JoinColumn(name = "student_id"),
-            inverseJoinColumns = @JoinColumn(name = "cluster_id")
+            inverseJoinColumns = @JoinColumn(name = "group_id")
     )
-    private List<Cluster> clusters;
+    private List<Group> groups;
 
 }

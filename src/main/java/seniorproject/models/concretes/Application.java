@@ -17,6 +17,6 @@ public class Application {
     private Project project;
 
     @ManyToOne
-    @JoinColumn(name = "cluster_id")
-    private Cluster cluster;
+    @JoinColumn(name = "group_id")
+    private Group group;
 }
