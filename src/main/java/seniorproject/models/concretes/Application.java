@@ -9,7 +9,8 @@ import javax.persistence.*;
 @Table(name = "applications")
 public class Application {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "application_id")
     private long id;
 
     @ManyToOne
@@ -19,4 +20,7 @@ public class Application {
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
+    private Status status;
+
+
 }

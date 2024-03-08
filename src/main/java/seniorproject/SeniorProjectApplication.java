@@ -15,7 +15,6 @@ public class SeniorProjectApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SeniorProjectApplication.class, args);
-		ReadJson.main(args);
 
 	}
 	@Bean
