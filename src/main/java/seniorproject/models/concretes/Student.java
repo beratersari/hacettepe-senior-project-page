@@ -1,8 +1,10 @@
 package seniorproject.models.concretes;
 import lombok.Data;
+import seniorproject.models.dto.StudentDto;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Data
@@ -10,7 +12,8 @@ import java.util.List;
 @Table(name = "students")
 public class Student {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "student_id")
     private long id;
     @Column(nullable = false)
     private String name;
@@ -25,5 +28,4 @@ public class Student {
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     private List<Group> groups;
-
 }
