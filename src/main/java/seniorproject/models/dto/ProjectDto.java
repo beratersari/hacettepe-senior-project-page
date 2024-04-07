@@ -3,6 +3,7 @@ import lombok.Data;
 import seniorproject.models.concretes.Application;
 import seniorproject.models.concretes.Project;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,5 +19,6 @@ public class ProjectDto {
     private long groupId;
     private List<Long> applicationIds;
     private boolean isWorking;
+    private List<String> authorNames = new ArrayList<>();;
 
 }
