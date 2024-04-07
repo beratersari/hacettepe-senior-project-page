@@ -1,11 +1,9 @@
 package seniorproject.models.concretes;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import seniorproject.models.dto.StudentDto;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Data

@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ProjectDao extends JpaRepository<Project, Long>{
 
+    //TO DO: check isWorking query
     List<Project> findAllByIsWorking(Boolean isWorking);
     List<Project> findAllByGroup_Id(Long groupId); // Onemli ozellik !!!
 

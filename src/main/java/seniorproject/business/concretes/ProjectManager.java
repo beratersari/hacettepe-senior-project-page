@@ -10,6 +10,7 @@ import seniorproject.dataAccess.abstracts.ApplicationDao;
 import seniorproject.dataAccess.abstracts.GroupDao;
 import seniorproject.dataAccess.abstracts.ProfessorDao;
 import seniorproject.dataAccess.abstracts.ProjectDao;
+import seniorproject.models.concretes.Professor;
 import seniorproject.models.concretes.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -114,13 +115,11 @@ public class ProjectManager implements ProjectService {
             ProjectDto projectDto = project.toProjectDto();
             List<String> authorNames = new ArrayList<>();
 
-            project.getProfessors().forEach(professor -> {
+            for (Professor professor : project.getProfessors()) {
                 authorNames.add(professor.getName());
-            });
+            }
 
-            project.getGroup().getStudents().forEach(student -> {
-                authorNames.add(student.getName());
-            });
+            project.getGroup().getStudents().forEach(student -> authorNames.add(student.getName()));
 
             projectDto.setAuthorNames(authorNames);
             projectDtos.add(projectDto);
