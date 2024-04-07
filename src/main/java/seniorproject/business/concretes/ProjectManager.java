@@ -14,6 +14,7 @@ import seniorproject.models.concretes.Professor;
 import seniorproject.models.concretes.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import seniorproject.models.concretes.Student;
 import seniorproject.models.dto.ProjectDto;
 
 import java.util.ArrayList;
@@ -137,13 +138,13 @@ public class ProjectManager implements ProjectService {
             ProjectDto projectDto = project.toProjectDto();
             List<String> authorNames = new ArrayList<>();
 
-            project.getProfessors().forEach(professor -> {
+            for (Professor professor : project.getProfessors()) {
                 authorNames.add(professor.getName());
-            });
+            }
 
-            project.getGroup().getStudents().forEach(student -> {
+            for (Student student : project.getGroup().getStudents()) {
                 authorNames.add(student.getName());
-            });
+            }
 
             projectDto.setAuthorNames(authorNames);
             projectDtos.add(projectDto);
