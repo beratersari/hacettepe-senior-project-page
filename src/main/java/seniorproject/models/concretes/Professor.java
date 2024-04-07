@@ -1,16 +1,15 @@
 package seniorproject.models.concretes;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import seniorproject.models.dto.ProfessorDto;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Entity
 @Table(name = "professors")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "projects"})
 public class Professor {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

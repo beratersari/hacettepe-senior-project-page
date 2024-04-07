@@ -1,17 +1,16 @@
 package seniorproject.models.concretes;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
-import seniorproject.models.dto.GroupDto;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Data
 @Entity
 @Table(name = "groups")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "applications", "projects", "students"})
 public class Group {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

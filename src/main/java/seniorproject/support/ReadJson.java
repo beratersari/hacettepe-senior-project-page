@@ -32,7 +32,7 @@ public class ReadJson {
                 Iterator<JsonNode> elements = jsonNode.elements();
                 while (elements.hasNext()) {
                     JsonNode projectNode = elements.next();
-                    Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "berAt20190909");
+                    Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
 
                     String projectName = projectNode.get("project_name").asText();
                     String projectTerm = projectNode.get("project_term").asText();

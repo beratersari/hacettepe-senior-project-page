@@ -1,7 +1,10 @@
 package seniorproject.core.utilities.results;
 
+import lombok.Getter;
+
+@Getter
 public class DataResult<T> extends Result{
-    private T data;
+    private final T data;
 
     public DataResult(T data, boolean success, String message) {
         super(success, message);
@@ -13,7 +16,9 @@ public class DataResult<T> extends Result{
         this.data = data;
     }
 
-    public T getData() {
-        return this.data;
+    public DataResult(T data, boolean success, String message, int pageSize, long totalElements, int totalPages, int number) {
+        super(success, message, pageSize, totalElements, totalPages, number);
+        this.data = data;
     }
+
 }

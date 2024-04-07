@@ -1,5 +1,6 @@
 package seniorproject.models.concretes;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import seniorproject.models.dto.ProjectDto;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 @Data
 @Entity
 @Table(name = "projects")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "applications", "professors", "group"})
 public class Project {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
