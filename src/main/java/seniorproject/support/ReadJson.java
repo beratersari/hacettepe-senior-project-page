@@ -17,8 +17,7 @@ import java.util.List;
 public class ReadJson {
 
     private static long groupIdCounter = 1;  // Counter for group IDs
-    private static long studentIdCounter = 1;  // Counter for student IDs
-    private static long professorIdCounter = 1;  // Counter for professor IDs
+    private static long userIdCounter = 1;  // Counter for professor IDs
     private static long projectIdCounter = 1;  // Counter for project IDs
     public static void main(String[] args) {
         String filePath = "/Users/erturkmens/hacettepe-senior-project-page/src/main/java/seniorproject/support/senior_projects.json";
@@ -55,7 +54,7 @@ public class ReadJson {
                     List<Student> studentList = new ArrayList<>();
                     for (String student : students) {
                         Student studentObject = new Student();
-                        studentObject.setId(generateStudentId());
+                        studentObject.setId(generateUserId());
                         studentObject.setName(student);
                         studentObject.setEmail(student + "@cs.hacettepe.edu.tr");
                         studentObject.setPassword("123456");
@@ -96,36 +95,42 @@ public class ReadJson {
                         preparedStatement.executeUpdate();
 
                         for(Professor professor: professorList){
-                            preparedStatement = connection.prepareStatement("SELECT professor_id FROM professors WHERE email = ?");
+                            preparedStatement = connection.prepareStatement("SELECT user_id FROM professors WHERE email = ?");
                             preparedStatement.setString(1, professor.getEmail());
                             ResultSet resultSet = preparedStatement.executeQuery();
 
                             if (resultSet.next()) {
-                                long existingProfessorId = resultSet.getLong("professor_id");
+                                long existingProfessorId = resultSet.getLong("user_id");
                                 if (existingProfessorId != 0) {
                                     professor.setId(existingProfessorId);
                                 } else {
-                                    professor.setId(generateProfessorId());
+                                    professor.setId(generateUserId());
                                 }
                             }
                             else {
-                                professor.setId(generateProfessorId());
+                                professor.setId(generateUserId());
                             }
 
                         }
 
                         project.setProfessors(professorList);
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO students (student_id, name, email, password) VALUES (?, ?, ?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO users (user_id,username,password) VALUES (?,?,'123456')");
+                        for (Student student : studentList) {
+                            preparedStatement.setLong(1, student.getId());
+                            preparedStatement.setString(2, student.getEmail());
+                            preparedStatement.executeUpdate();
+                        }
+
+                        preparedStatement = connection.prepareStatement("INSERT INTO students (user_id, name, email) VALUES (?, ?, ?)");
                         for (Student student : studentList) {
                             preparedStatement.setLong(1, student.getId());
                             preparedStatement.setString(2, student.getName());
                             preparedStatement.setString(3, student.getEmail());
-                            preparedStatement.setString(4, student.getPassword());
                             preparedStatement.executeUpdate();
                         }
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO student_group (student_id, group_id) VALUES (?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO student_group (user_id, group_id) VALUES (?, ?)");
 
                         for (Student student : studentList) {
                             preparedStatement.setLong(1, student.getId());
@@ -133,14 +138,24 @@ public class ReadJson {
                             preparedStatement.executeUpdate();
                         }
 
+                        for (Professor professor : professorList) {
+                            try {
+                                preparedStatement = connection.prepareStatement("INSERT INTO users (user_id,username,password) VALUES (?,?,'123456')");
+                                preparedStatement.setLong(1, professor.getId());
+                                preparedStatement.setString(2, professor.getEmail());
+                                preparedStatement.executeUpdate();
+                            } catch (SQLException e) {
+                                System.out.println("Professor already exists:" + professor.getId());
+                            }
+                        }
+
 
                         for (Professor professor : professorList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO professors (professor_id, name, email, password) VALUES (?, ?, ?, ?)");
+                                preparedStatement = connection.prepareStatement("INSERT INTO professors (user_id, name, email) VALUES (?, ?, ?)");
                                 preparedStatement.setLong(1, professor.getId());
                                 preparedStatement.setString(2, professor.getName());
                                 preparedStatement.setString(3, professor.getEmail());
-                                preparedStatement.setString(4, professor.getPassword());
                                 preparedStatement.executeUpdate();
                             } catch (SQLException e) {
                                 System.out.println("Professor already exists:" + professor.getId());
@@ -157,7 +172,7 @@ public class ReadJson {
                         preparedStatement.setLong(6, group.getId());
                         preparedStatement.executeUpdate();
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO project_professor (project_id, professor_id) VALUES (?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO project_professor (project_id, user_id) VALUES (?, ?)");
                         for (Professor professor : professorList) {
                             preparedStatement.setLong(1, project.getId());
                             preparedStatement.setLong(2, professor.getId());
@@ -180,12 +195,8 @@ public class ReadJson {
         return groupIdCounter++;
     }
 
-    private static synchronized long generateStudentId() {
-        return studentIdCounter++;
-    }
-
-    private static synchronized long generateProfessorId() {
-        return professorIdCounter++;
+    private static synchronized long generateUserId() {
+        return userIdCounter++;
     }
 
     private static synchronized long generateProjectId() {

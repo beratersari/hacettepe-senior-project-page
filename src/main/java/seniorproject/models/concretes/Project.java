@@ -35,7 +35,7 @@ public class Project {
     @JoinTable(
             name = "project_professor",
             joinColumns = @JoinColumn(name = "project_id"),
-            inverseJoinColumns = @JoinColumn(name = "professor_id")
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private List<Professor> professors;
 

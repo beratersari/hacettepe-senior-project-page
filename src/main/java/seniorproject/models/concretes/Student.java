@@ -10,21 +10,22 @@ import java.util.List;
 @Entity
 @Table(name = "students")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "groups"})
-public class Student {
+public class Student extends UserEntity {
+
+    @MapsId
+    @JoinColumn(name = "user_id")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "student_id")
     private long id;
+
     @Column(nullable = false)
     private String name;
     @Column(nullable = false, unique = true)
     private String email;
-    @Column(nullable = false)
-    private String password;
+
     @ManyToMany
     @JoinTable(
             name = "student_group",
-            joinColumns = @JoinColumn(name = "student_id"),
+            joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     private List<Group> groups;

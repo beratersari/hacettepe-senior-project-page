@@ -10,10 +10,10 @@ import java.util.List;
 @Entity
 @Table(name = "professors")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "projects"})
-public class Professor {
+public class Professor extends UserEntity {
+    @MapsId
+    @JoinColumn(name = "user_id")
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "professor_id")
     private long id;
 
     @Column(nullable = false)
@@ -22,8 +22,6 @@ public class Professor {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
-    private String password;
 
     @ManyToMany(mappedBy = "professors")
     private List<Project> projects;
