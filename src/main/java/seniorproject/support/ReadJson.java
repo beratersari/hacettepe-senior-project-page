@@ -163,7 +163,7 @@ public class ReadJson {
                         }
 
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, name, term, youtube_link, report_link, group_id) VALUES (?, ?, ?, ?, ?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, name, term, youtube_link, report_link, group_id,isworking) VALUES (?, ?, ?, ?, ?, ?,'true')");
                         preparedStatement.setLong(1, project.getId());
                         preparedStatement.setString(2, project.getName());
                         preparedStatement.setString(3, project.getTerm());
