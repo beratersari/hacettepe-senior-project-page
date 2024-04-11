@@ -1,5 +1,7 @@
 package seniorproject.support;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import seniorproject.models.concretes.Group;
 import seniorproject.models.concretes.Professor;
 import seniorproject.models.concretes.Project;
@@ -19,19 +21,40 @@ public class ReadJson {
     private static long groupIdCounter = 1;  // Counter for group IDs
     private static long userIdCounter = 1;  // Counter for professor IDs
     private static long projectIdCounter = 1;  // Counter for project IDs
+
+    private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    private static final String hashedPassword = passwordEncoder.encode(("123456"));
     public static void main(String[] args) {
-        String filePath = "/Users/erturkmens/hacettepe-senior-project-page/src/main/java/seniorproject/support/senior_projects.json";
+        String filePath = "/home/ekin/projects/school/hacettepe-senior-project-page/src/main/java/seniorproject/support/senior_projects.json";
 
         try {
             File jsonFile = new File(filePath);
             ObjectMapper objectMapper = new ObjectMapper();
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
 
             JsonNode jsonNode = objectMapper.readTree(jsonFile);
+
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO roles (id, name)  VALUES (?, ?)");
+            preparedStatement.setLong(1, 1);
+            preparedStatement.setString(2, "ADMIN");
+            preparedStatement.executeUpdate();
+
+            preparedStatement = connection.prepareStatement("INSERT INTO roles (id, name)  VALUES (?, ?)");
+            preparedStatement.setLong(1, 2);
+            preparedStatement.setString(2, "PROFESSOR");
+            preparedStatement.executeUpdate();
+
+            preparedStatement = connection.prepareStatement("INSERT INTO roles (id, name)  VALUES (?, ?)");
+            preparedStatement.setLong(1, 3);
+            preparedStatement.setString(2, "STUDENT");
+            preparedStatement.executeUpdate();
             if (jsonNode.isArray()) {
                 Iterator<JsonNode> elements = jsonNode.elements();
                 while (elements.hasNext()) {
                     JsonNode projectNode = elements.next();
-                    Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
+                    connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
+
 
                     String projectName = projectNode.get("project_name").asText();
                     String projectTerm = projectNode.get("project_term").asText();
@@ -56,8 +79,8 @@ public class ReadJson {
                         Student studentObject = new Student();
                         studentObject.setId(generateUserId());
                         studentObject.setName(student);
-                        studentObject.setEmail(student + "@cs.hacettepe.edu.tr");
-                        studentObject.setPassword("123456");
+                        studentObject.setEmail(student);
+                        studentObject.setPassword(hashedPassword);
                         studentList.add(studentObject);
                     }
                     group.setStudents(studentList);
@@ -84,13 +107,13 @@ public class ReadJson {
 
                         Professor professor = new Professor();
                         professor.setName(supervisor);
-                        professor.setEmail( professorNameLower+ "@cs.hacettepe.edu.tr");
-                        professor.setPassword("123456");
+                        professor.setEmail( professorNameLower);
+                        professor.setPassword(hashedPassword);
                         professorList.add(professor);
                     }
 
                     try {
-                        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO groups (group_id)  VALUES (?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO groups (group_id)  VALUES (?)");
                         preparedStatement.setLong(1, group.getId());
                         preparedStatement.executeUpdate();
 
@@ -115,10 +138,11 @@ public class ReadJson {
 
                         project.setProfessors(professorList);
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO users (user_id,username,password) VALUES (?,?,'123456')");
+                        preparedStatement = connection.prepareStatement("INSERT INTO users (user_id,username,password) VALUES (?,?,?)");
                         for (Student student : studentList) {
                             preparedStatement.setLong(1, student.getId());
                             preparedStatement.setString(2, student.getEmail());
+                            preparedStatement.setString(3, hashedPassword);
                             preparedStatement.executeUpdate();
                         }
 
@@ -140,15 +164,35 @@ public class ReadJson {
 
                         for (Professor professor : professorList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO users (user_id,username,password) VALUES (?,?,'123456')");
+                                preparedStatement = connection.prepareStatement("INSERT INTO users (user_id,username,password) VALUES (?,?,?)");
                                 preparedStatement.setLong(1, professor.getId());
                                 preparedStatement.setString(2, professor.getEmail());
+                                preparedStatement.setString(3, hashedPassword);
                                 preparedStatement.executeUpdate();
                             } catch (SQLException e) {
                                 System.out.println("Professor already exists:" + professor.getId());
                             }
                         }
-
+                        for (Professor professor : professorList) {
+                            try {
+                                preparedStatement = connection.prepareStatement("INSERT INTO user_roles (user_id,role_id) VALUES (?,?)");
+                                preparedStatement.setLong(1, professor.getId());
+                                preparedStatement.setLong(2, 2);
+                                preparedStatement.executeUpdate();
+                            } catch (SQLException e) {
+                                System.out.println("Professor Role Aleeady exists:" + professor.getId());
+                            }
+                        }
+                        for (Student student : studentList) {
+                            try {
+                                preparedStatement = connection.prepareStatement("INSERT INTO user_roles (user_id,role_id) VALUES (?,?)");
+                                preparedStatement.setLong(1, student.getId());
+                                preparedStatement.setLong(2, 3);
+                                preparedStatement.executeUpdate();
+                            } catch (SQLException e) {
+                                System.out.println("Student Role Aleeady exists:" + student.getId());
+                            }
+                        }
 
                         for (Professor professor : professorList) {
                             try {
