@@ -1,7 +1,6 @@
 package seniorproject.business.abstracts;
 
 import seniorproject.core.utilities.results.DataResult;
-import seniorproject.core.utilities.results.Result;
 import seniorproject.models.concretes.Project;
 import seniorproject.models.dto.ProjectDto;
 

@@ -3,7 +3,6 @@ package seniorproject.api.controllers;
 import org.springframework.web.bind.annotation.*;
 import seniorproject.business.abstracts.ProjectService;
 import seniorproject.core.utilities.results.DataResult;
-import seniorproject.core.utilities.results.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import seniorproject.models.concretes.Project;
 import seniorproject.models.dto.ProjectDto;
