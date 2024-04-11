@@ -8,8 +8,6 @@ import java.util.List;
 
 public interface ProjectDao extends JpaRepository<Project, Long>{
 
-    //TO DO: check isWorking query
-    List<Project> findAllByIsWorking(Boolean isWorking);
     List<Project> findAllByGroup_Id(Long groupId); // Onemli ozellik !!!
 
     @Query(value = "SELECT p FROM Project p where lower(p.name) like %:name%")

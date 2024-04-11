@@ -2,10 +2,7 @@ package seniorproject.support;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import seniorproject.models.concretes.Group;
-import seniorproject.models.concretes.Professor;
-import seniorproject.models.concretes.Project;
-import seniorproject.models.concretes.Student;
+import seniorproject.models.concretes.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,12 +23,12 @@ public class ReadJson {
 
     private static final String hashedPassword = passwordEncoder.encode(("123456"));
     public static void main(String[] args) {
-        String filePath = "/home/ekin/projects/school/hacettepe-senior-project-page/src/main/java/seniorproject/support/senior_projects.json";
+        String filePath = "../hacettepe-senior-project-page/src/main/java/seniorproject/support/senior_projects.json";
 
         try {
             File jsonFile = new File(filePath);
             ObjectMapper objectMapper = new ObjectMapper();
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
 
             JsonNode jsonNode = objectMapper.readTree(jsonFile);
 
@@ -53,7 +50,7 @@ public class ReadJson {
                 Iterator<JsonNode> elements = jsonNode.elements();
                 while (elements.hasNext()) {
                     JsonNode projectNode = elements.next();
-                    connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
+                    connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
 
 
                     String projectName = projectNode.get("project_name").asText();
@@ -71,6 +68,7 @@ public class ReadJson {
                     project.setYoutubeLink(youtubeLink);
                     project.setReportLink(reportLink);
                     project.setDescription(abstractText);
+                    project.setProjectStatus(ProjectStatus.WORKING);
 
                     Group group = new Group();
                     group.setId(generateGroupId());
@@ -207,13 +205,14 @@ public class ReadJson {
                         }
 
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, name, term, youtube_link, report_link, group_id,isworking) VALUES (?, ?, ?, ?, ?, ?,'true')");
+                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, name, term, youtube_link, report_link, group_id,project_status) VALUES (?, ?, ?, ?, ?, ?,?)");
                         preparedStatement.setLong(1, project.getId());
                         preparedStatement.setString(2, project.getName());
                         preparedStatement.setString(3, project.getTerm());
                         preparedStatement.setString(4, project.getYoutubeLink());
                         preparedStatement.setString(5, project.getReportLink());
                         preparedStatement.setLong(6, group.getId());
+                        preparedStatement.setString(7, String.valueOf(project.getProjectStatus()));
                         preparedStatement.executeUpdate();
 
                         preparedStatement = connection.prepareStatement("INSERT INTO project_professor (project_id, user_id) VALUES (?, ?)");

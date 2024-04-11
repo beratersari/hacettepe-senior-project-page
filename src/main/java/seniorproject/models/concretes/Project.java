@@ -3,6 +3,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
+import org.hibernate.annotations.Type;
 import seniorproject.models.dto.ProjectDto;
 
 import javax.persistence.*;
@@ -48,8 +49,8 @@ public class Project {
     @JsonManagedReference
     private List<Application> applications;
 
-    @Column(name = "isworking")
-    private boolean isWorking;
+    @Enumerated(EnumType.STRING)
+    private ProjectStatus projectStatus;
 
     public ProjectDto toProjectDto() {
         ProjectDto projectDto = new ProjectDto();
