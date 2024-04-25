@@ -1,75 +1,39 @@
 package seniorproject.api.controllers;
 
 
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import seniorproject.models.dto.AuthResponseDto;
-import seniorproject.models.dto.RegisterDto;
-import seniorproject.repository.RoleRepository;
+import seniorproject.models.dto.UserLoginDto;
+
+import seniorproject.models.dto.UserRegisterDto;
 import seniorproject.repository.UserRepository;
-import seniorproject.models.concretes.UserEntity;
-import seniorproject.models.concretes.Role;
-import seniorproject.models.dto.LoginDto;
-import seniorproject.security.JWTGenerator;
-
-
-
-import java.util.Collections;
-
+import seniorproject.service.AuthService;
+import seniorproject.util.Security.AccessToken;
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 @RequestMapping("/api/auth")
-public class AuthController {
 
-    private AuthenticationManager authenticationManager;
-    private UserRepository userRepository;
-    private RoleRepository roleRepository;
-    private PasswordEncoder passwordEncoder;
-    private JWTGenerator jwtGenerator;
+public class AuthController {
+    @Autowired
+    private AuthService authService;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository,
-                          RoleRepository roleRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator) {
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtGenerator = jwtGenerator;
+    private UserRepository userRepository;
+
+    @PostMapping("/register")
+    public ResponseEntity<AccessToken> register(@RequestBody UserRegisterDto userRegisterDto) {
+        AccessToken accessToken =  authService.register(userRegisterDto);
+        return ResponseEntity.ok(accessToken);
+
+    }
+    @PostMapping("/login")
+    public ResponseEntity<AccessToken> login(@RequestBody UserLoginDto userLoginDto) {
+        AccessToken accessToken = authService.login(userLoginDto);
+        return ResponseEntity.ok(accessToken);
     }
 
-    @PostMapping("login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto){
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
-                        loginDto.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token = jwtGenerator.generateToken(authentication);
-        return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
-    }
 
-    @PostMapping("register")
-    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
-        if (userRepository.existsByUsername(registerDto.getUsername())) {
-            return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
-        }
 
-        UserEntity user = new UserEntity();
-        user.setUsername(registerDto.getUsername());
-        user.setPassword(passwordEncoder.encode((registerDto.getPassword())));
 
-        Role roles = roleRepository.findByName("USER").get();
-        user.setRoles(Collections.singletonList(roles));
-
-        userRepository.save(user);
-
-        return new ResponseEntity<>("User registered success!", HttpStatus.OK);
-    }
 }

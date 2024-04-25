@@ -10,13 +10,14 @@ import java.util.List;
 @Entity
 @Table(name = "professors")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "projects"})
-public class Professor extends UserEntity {
+public class Professor extends User {
     @MapsId
-    @JoinColumn(name = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @JoinColumn(name = "id")
     private long id;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String name;
 
     @Column(nullable = false, unique = true)

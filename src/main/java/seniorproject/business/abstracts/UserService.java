@@ -1,4 +1,4 @@
 package seniorproject.business.abstracts;
 
-public class UserService {
+public interface UserService {
 }
