@@ -20,6 +20,8 @@ public class Application {
     @ManyToOne
     @JoinColumn(name = "group_id")
     private Group group;
+
+    @Enumerated(EnumType.STRING)
     private Status status;
 
 

@@ -3,7 +3,6 @@ package seniorproject.api.controllers;
 import org.springframework.web.bind.annotation.*;
 import seniorproject.business.abstracts.ProjectService;
 import seniorproject.core.utilities.results.DataResult;
-import seniorproject.core.utilities.results.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import seniorproject.models.concretes.Project;
 import seniorproject.models.dto.ProjectDto;
@@ -23,32 +22,12 @@ public class ProjectsController {
         this.projectService = projectService;
     }
 
-    @GetMapping("/getAll")
-    public DataResult<List<ProjectDto>> getAll() {
-        return this.projectService.getAll();
-    }
-
 
     @GetMapping("/getAllByPage")
     public DataResult<List<ProjectDto>> getAllByPage(@RequestParam(name = "pageNo") int pageNo, @RequestParam("pageSize") int pageSize) {
         return this.projectService.getAll(pageNo, pageSize);
     }
 
-    @GetMapping("/getWorkingProjects")
-    public DataResult<List<ProjectDto>> getWorkingProjects() {
-        return this.projectService.getWorkingProjects(true);
-    }
-
-    @GetMapping("/getArchivedProjects")
-    public DataResult<List<ProjectDto>> getArchivedProjects() {
-        return this.projectService.getWorkingProjects(false);
-    }
-
-
-    @PostMapping("/add")
-    public Result add(@RequestBody ProjectDto projectDto) {
-        return this.projectService.add(projectDto);
-    }
 
     @GetMapping("/getByGroup")
     public DataResult<List<Project>> getByGroup(@RequestParam Long groupId) {

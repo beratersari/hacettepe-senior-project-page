@@ -38,16 +38,6 @@ public class ProjectManager implements ProjectService {
     }
 
     @Override
-    public DataResult<List<ProjectDto>> getAll() {
-        List<Project> projects = projectDao.findAll();
-        List<ProjectDto> projectDtos = projects.stream()
-                .map(Project::toProjectDto)
-                .collect(Collectors.toList());
-        return new SuccessDataResult<>(projectDtos, "Projects listed.");
-    }
-
-
-    @Override
     public DataResult<List<ProjectDto>> getAll(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize);
         Page<Project> projectPage = projectDao.findAll(pageable);
@@ -63,30 +53,6 @@ public class ProjectManager implements ProjectService {
     }
 
 
-    @Override
-    public Result add(ProjectDto projectDto) {
-        Project project = new Project();
-        project.setName(projectDto.getName());
-        project.setTerm(projectDto.getTerm());
-        project.setYoutubeLink(projectDto.getYoutubeLink());
-        project.setReportLink(projectDto.getReportLink());
-        project.setDescription(projectDto.getDescription());
-        project.setProfessors(professorDao.findAllById(projectDto.getProfessorIds()));
-        project.setGroup(groupDao.findById(projectDto.getGroupId()).orElse(null));
-        project.setApplications(applicationDao.findAllById(projectDto.getApplicationIds()));
-        projectDao.save(project);
-
-        return new SuccessResult("Project added.");
-    }
-
-    @Override
-    public DataResult<List<ProjectDto>> getWorkingProjects(Boolean working) {
-        List<Project> projects = projectDao.findAllByIsWorking(true);
-        List<ProjectDto> projectDtos = projects.stream()
-                .map(Project::toProjectDto)
-                .collect(Collectors.toList());
-        return new SuccessDataResult<>(projectDtos, "Working projects listed.");
-    }
 
     @Override
     public DataResult<List<Project>> getAllByGroup_Id(Long groupId) {

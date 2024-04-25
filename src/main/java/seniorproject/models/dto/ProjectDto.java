@@ -16,7 +16,7 @@ public class ProjectDto {
     private List<Long> professorIds;
     private long groupId;
     private List<Long> applicationIds;
-    private boolean isWorking;
+    private String projectStatus;
     private List<String> authorNames = new ArrayList<>();
 
 }

@@ -48,8 +48,8 @@ public class Project {
     @JsonManagedReference
     private List<Application> applications;
 
-    @Column(name = "isworking")
-    private boolean isWorking;
+    @Enumerated(EnumType.STRING)
+    private ProjectStatus projectStatus;
 
     public ProjectDto toProjectDto() {
         ProjectDto projectDto = new ProjectDto();
