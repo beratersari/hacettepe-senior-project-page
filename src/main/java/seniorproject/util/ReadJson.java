@@ -28,7 +28,7 @@ public class ReadJson {
         try {
             File jsonFile = new File(filePath);
             ObjectMapper objectMapper = new ObjectMapper();
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
 
             JsonNode jsonNode = objectMapper.readTree(jsonFile);
 
@@ -50,7 +50,7 @@ public class ReadJson {
                 Iterator<JsonNode> elements = jsonNode.elements();
                 while (elements.hasNext()) {
                     JsonNode projectNode = elements.next();
-                    connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
+                    connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
 
 
                     String projectName = projectNode.get("project_name").asText();
@@ -134,11 +134,12 @@ public class ReadJson {
 
                         project.setProfessors(professorList);
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO users (id,username,password) VALUES (?,?,?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO users (id,username,email,password) VALUES (?,?,?,?)");
                         for (Student student : studentList) {
                             preparedStatement.setLong(1, student.getId());
                             preparedStatement.setString(2, student.getEmail());
-                            preparedStatement.setString(3, hashedPassword);
+                            preparedStatement.setString(3, student.getEmail());
+                            preparedStatement.setString(4, hashedPassword);
                             preparedStatement.executeUpdate();
                         }
 
@@ -150,7 +151,7 @@ public class ReadJson {
                             preparedStatement.executeUpdate();
                         }
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO student_group (id, group_id) VALUES (?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO student_group (user_id, group_id) VALUES (?, ?)");
 
                         for (Student student : studentList) {
                             preparedStatement.setLong(1, student.getId());
@@ -160,10 +161,11 @@ public class ReadJson {
 
                         for (Professor professor : professorList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO users (id,username,password) VALUES (?,?,?)");
+                                preparedStatement = connection.prepareStatement("INSERT INTO users (id,username,email,password) VALUES (?,?,?,?)");
                                 preparedStatement.setLong(1, professor.getId());
                                 preparedStatement.setString(2, professor.getEmail());
-                                preparedStatement.setString(3, hashedPassword);
+                                preparedStatement.setString(3, professor.getEmail());
+                                preparedStatement.setString(4, hashedPassword);
                                 preparedStatement.executeUpdate();
                             } catch (SQLException e) {
                                 System.out.println("Professor already exists:" + professor.getId());
@@ -171,7 +173,7 @@ public class ReadJson {
                         }
                         for (Professor professor : professorList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO user_roles (id,role_id) VALUES (?,?)");
+                                preparedStatement = connection.prepareStatement("INSERT INTO user_roles (user_id,role_id) VALUES (?,?)");
                                 preparedStatement.setLong(1, professor.getId());
                                 preparedStatement.setLong(2, 2);
                                 preparedStatement.executeUpdate();
@@ -181,7 +183,7 @@ public class ReadJson {
                         }
                         for (Student student : studentList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO user_roles (id,role_id) VALUES (?,?)");
+                                preparedStatement = connection.prepareStatement("INSERT INTO user_roles (user_id,role_id) VALUES (?,?)");
                                 preparedStatement.setLong(1, student.getId());
                                 preparedStatement.setLong(2, 3);
                                 preparedStatement.executeUpdate();
@@ -213,7 +215,7 @@ public class ReadJson {
                         preparedStatement.setString(7, String.valueOf(project.getProjectStatus()));
                         preparedStatement.executeUpdate();
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO project_professor (project_id, id) VALUES (?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO project_professor (project_id, user_id) VALUES (?, ?)");
                         for (Professor professor : professorList) {
                             preparedStatement.setLong(1, project.getId());
                             preparedStatement.setLong(2, professor.getId());
