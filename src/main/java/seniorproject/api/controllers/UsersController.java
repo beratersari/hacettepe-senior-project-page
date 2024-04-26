@@ -14,10 +14,6 @@ import org.springframework.security.core.userdetails.User;
 @RequestMapping("/api/users")
 
 public class UsersController {
-    int USER_TYPE_STUDENT = 1;
-    int USER_TYPE_PROFESSOR = 2;
-    int USER_TYPE_ADMIN = 3;
-
     private final UserService userService;
 
     public UsersController(UserService userService) {
