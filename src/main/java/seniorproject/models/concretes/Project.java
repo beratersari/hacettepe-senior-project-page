@@ -49,7 +49,7 @@ public class Project {
     private List<Application> applications;
 
     @Enumerated(EnumType.STRING)
-    private ProjectStatus projectStatus;
+    private EProjectStatus EProjectStatus;
 
     public ProjectDto toProjectDto() {
         ProjectDto projectDto = new ProjectDto();

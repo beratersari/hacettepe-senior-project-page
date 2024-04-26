@@ -12,7 +12,7 @@ import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.springframework.security.crypto.password.PasswordEncoder;
+
 public class ReadJson {
 
     private static long groupIdCounter = 1;  // Counter for group IDs
@@ -68,7 +68,7 @@ public class ReadJson {
                     project.setYoutubeLink(youtubeLink);
                     project.setReportLink(reportLink);
                     project.setDescription(abstractText);
-                    project.setProjectStatus(ProjectStatus.WORKING);
+                    project.setEProjectStatus(EProjectStatus.WORKING);
 
                     Group group = new Group();
                     group.setId(generateGroupId());
@@ -212,7 +212,7 @@ public class ReadJson {
                         preparedStatement.setString(4, project.getYoutubeLink());
                         preparedStatement.setString(5, project.getReportLink());
                         preparedStatement.setLong(6, group.getId());
-                        preparedStatement.setString(7, String.valueOf(project.getProjectStatus()));
+                        preparedStatement.setString(7, String.valueOf(project.getEProjectStatus()));
                         preparedStatement.executeUpdate();
 
                         preparedStatement = connection.prepareStatement("INSERT INTO project_professor (project_id, user_id) VALUES (?, ?)");
