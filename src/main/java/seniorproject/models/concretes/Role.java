@@ -1,35 +1,23 @@
 package seniorproject.models.concretes;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+
+import lombok.Data;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
 @Entity
-@Table(name = "roles")
 @Data
-public class Role extends BaseEntity{
+@Table(name = "roles")
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
 
-    @Column(name = "name",unique = true,nullable = false)
-    private String name;
+    @Enumerated(EnumType.STRING)
+    @Column
+    private ERole name;
 
-
-    @Override
-    public String toString() {
-        return "Role{" +
-                "id='" + getId() + '\'' +
-                "name='" + name + '\'' +
-                '}';
+    public ERole getName() {
+        return name;
     }
-    @ManyToMany(mappedBy = "roles")
-    private Set<User> users = new HashSet<>();
-
 }
