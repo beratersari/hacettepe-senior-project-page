@@ -1,73 +1,38 @@
 package seniorproject.models.concretes;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
-
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor()
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "roles"})
-public class User extends BaseEntity {
+@Data
+@NoArgsConstructor
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     private long id;
 
-    @Size(min = 6,message = "Username length must be minimum 6")
-    @Column(name = "username",unique = true)
+    @Column
     private String username;
 
-    @Email(message = "Email Should Be Valid")
-    @Column(name = "email",unique = true,nullable = false)
+    @Column
     private String email;
 
-    @Size(min = 8,message = "Password length must be minimum 8")
-    @Column(name = "password")
+    @Column
     private String password;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_to_roles",
+            joinColumns = @JoinColumn(name="user_id"),
+            inverseJoinColumns = @JoinColumn(name="role_id"))
+    private Set<Role> roles = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(
-                    name = "user_id",referencedColumnName = "id"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "role_id",referencedColumnName = "id"
-            )
-    )
-    private Set<Role> roles  = new HashSet<>();
-
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id='" + getId() + '\'' +
-                "username='" + username + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                '}';
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public long getId() {
-        return id;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

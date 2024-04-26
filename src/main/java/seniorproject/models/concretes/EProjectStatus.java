@@ -1,6 +1,6 @@
 package seniorproject.models.concretes;
 
-public enum ProjectStatus{
+public enum EProjectStatus {
     OFFERED,
     WORKING,
     ARCHIVED
