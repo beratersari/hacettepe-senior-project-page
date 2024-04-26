@@ -173,7 +173,7 @@ public class ReadJson {
                         }
                         for (Professor professor : professorList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO user_roles (user_id,role_id) VALUES (?,?)");
+                                preparedStatement = connection.prepareStatement("INSERT INTO users_to_roles (user_id,role_id) VALUES (?,?)");
                                 preparedStatement.setLong(1, professor.getId());
                                 preparedStatement.setLong(2, 2);
                                 preparedStatement.executeUpdate();
@@ -183,7 +183,7 @@ public class ReadJson {
                         }
                         for (Student student : studentList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO user_roles (user_id,role_id) VALUES (?,?)");
+                                preparedStatement = connection.prepareStatement("INSERT INTO users_to_roles (user_id,role_id) VALUES (?,?)");
                                 preparedStatement.setLong(1, student.getId());
                                 preparedStatement.setLong(2, 3);
                                 preparedStatement.executeUpdate();
