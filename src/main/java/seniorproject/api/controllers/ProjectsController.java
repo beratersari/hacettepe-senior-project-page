@@ -25,6 +25,8 @@ public class ProjectsController {
 
 
     @GetMapping("/getAllByPage")
+    //authorization
+    @PreAuthorize("hasRole('ADMIN')")
     public DataResult<List<ProjectDto>> getAllByPage(@RequestParam(name = "pageNo") int pageNo, @RequestParam("pageSize") int pageSize) {
         return this.projectService.getAll(pageNo, pageSize);
     }

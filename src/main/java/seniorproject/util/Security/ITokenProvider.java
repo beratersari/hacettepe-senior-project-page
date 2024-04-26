@@ -5,6 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import seniorproject.models.concretes.Role;
+import seniorproject.models.concretes.User;
 import seniorproject.util.Security.AccessToken;
 
 import javax.servlet.http.HttpServletRequest;

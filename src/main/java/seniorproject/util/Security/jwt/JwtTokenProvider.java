@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+import seniorproject.models.concretes.User;
 import seniorproject.util.Security.AccessToken;
 import seniorproject.util.Security.ITokenProvider;
 import seniorproject.util.Security.SecretKey;
@@ -36,7 +37,7 @@ public class JwtTokenProvider implements ITokenProvider {
     public AccessToken createToken(String username, Set<Role> roles) {
         SecretKey secretKey = new SecretKey(secretKeyValue,expiration);
         String token = tokenHelper.generateJwtToken(secretKey,username,roles);
-        return new AccessToken(token);
+        return new AccessToken(token );
     }
 
     @Override
@@ -60,8 +61,7 @@ public class JwtTokenProvider implements ITokenProvider {
         String username = tokenHelper.getUsernameFromJwtToken(secretKey,accessToken);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
-        return authentication;
+        return new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
     }
 
 

@@ -70,6 +70,7 @@ public class AuthServiceImpl implements AuthService {
         try {
             Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username,password));
             Set<Role> roles = userRepository.findByUsername(username).get().getRoles();
+            User user = userRepository.findByUsername(username).get();
             return tokenProvider.createToken(username,roles);
 
         }catch (AuthenticationException exception) {

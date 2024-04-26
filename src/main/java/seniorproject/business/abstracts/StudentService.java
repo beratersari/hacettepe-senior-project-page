@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface StudentService{
     DataResult<List<Student>> getAll();
+
+
 }

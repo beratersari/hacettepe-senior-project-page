@@ -41,6 +41,9 @@ public class SecurityConfigurer  extends WebSecurityConfigurerAdapter {
                 authorizeRequests()
                 .antMatchers("/api/auth/register").permitAll()
                 .antMatchers("/api/auth/login").permitAll()
+                .antMatchers("/api/projects/getSortedByNames").hasRole("PROFESSOR")
+                .and()
+                .authorizeRequests()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);
