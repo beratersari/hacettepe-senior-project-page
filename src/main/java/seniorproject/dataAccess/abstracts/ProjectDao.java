@@ -18,7 +18,7 @@ public interface ProjectDao extends JpaRepository<Project, Long>{
                     "FROM Project p " +
                     "LEFT JOIN p.professors pr " +
                     "LEFT JOIN p.group.students s " +
-                    "WHERE LOWER(pr.name) LIKE %:authorName% OR LOWER(s.name) LIKE %:authorName%"
+                    "WHERE LOWER(pr.username) LIKE %:authorName% OR LOWER(s.username) LIKE %:authorName%"
     )
     List<Project> findAllByAuthorNameContaining(@Param("authorName") String authorName);
 

@@ -83,10 +83,10 @@ public class ProjectManager implements ProjectService {
             List<String> authorNames = new ArrayList<>();
 
             for (Professor professor : project.getProfessors()) {
-                authorNames.add(professor.getName());
+                authorNames.add(professor.getUsername());
             }
 
-            project.getGroup().getStudents().forEach(student -> authorNames.add(student.getName()));
+            project.getGroup().getStudents().forEach(student -> authorNames.add(student.getUsername()));
 
             projectDto.setAuthorNames(authorNames);
             projectDtos.add(projectDto);
@@ -105,11 +105,11 @@ public class ProjectManager implements ProjectService {
             List<String> authorNames = new ArrayList<>();
 
             for (Professor professor : project.getProfessors()) {
-                authorNames.add(professor.getName());
+                authorNames.add(professor.getUsername());
             }
 
             for (Student student : project.getGroup().getStudents()) {
-                authorNames.add(student.getName());
+                authorNames.add(student.getUsername());
             }
 
             projectDto.setAuthorNames(authorNames);

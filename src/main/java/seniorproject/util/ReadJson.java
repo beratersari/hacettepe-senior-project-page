@@ -28,29 +28,29 @@ public class ReadJson {
         try {
             File jsonFile = new File(filePath);
             ObjectMapper objectMapper = new ObjectMapper();
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
 
             JsonNode jsonNode = objectMapper.readTree(jsonFile);
 
             PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO roles (id, name)  VALUES (?, ?)");
             preparedStatement.setLong(1, 1);
-            preparedStatement.setString(2, "ADMIN");
+            preparedStatement.setString(2, "ROLE_ADMIN");
             preparedStatement.executeUpdate();
 
             preparedStatement = connection.prepareStatement("INSERT INTO roles (id, name)  VALUES (?, ?)");
             preparedStatement.setLong(1, 2);
-            preparedStatement.setString(2, "PROFESSOR");
+            preparedStatement.setString(2, "ROLE_PROFESSOR");
             preparedStatement.executeUpdate();
 
             preparedStatement = connection.prepareStatement("INSERT INTO roles (id, name)  VALUES (?, ?)");
             preparedStatement.setLong(1, 3);
-            preparedStatement.setString(2, "STUDENT");
+            preparedStatement.setString(2, "ROLE_STUDENT");
             preparedStatement.executeUpdate();
             if (jsonNode.isArray()) {
                 Iterator<JsonNode> elements = jsonNode.elements();
                 while (elements.hasNext()) {
                     JsonNode projectNode = elements.next();
-                    connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
+                    connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
 
 
                     String projectName = projectNode.get("project_name").asText();
@@ -114,7 +114,7 @@ public class ReadJson {
                         preparedStatement.executeUpdate();
 
                         for(Professor professor: professorList){
-                            preparedStatement = connection.prepareStatement("SELECT id FROM professors WHERE email = ?");
+                            preparedStatement = connection.prepareStatement("SELECT p.id FROM users left join public.professors p on users.id = p.id WHERE email = ?");
                             preparedStatement.setString(1, professor.getEmail());
                             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -134,20 +134,18 @@ public class ReadJson {
 
                         project.setProfessors(professorList);
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO users (id,username,email,password) VALUES (?,?,?,?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO users (id,email,password,username) VALUES (?,?, ?, ?)");
                         for (Student student : studentList) {
                             preparedStatement.setLong(1, student.getId());
                             preparedStatement.setString(2, student.getEmail());
-                            preparedStatement.setString(3, student.getEmail());
-                            preparedStatement.setString(4, hashedPassword);
+                            preparedStatement.setString(3, student.getPassword());
+                            preparedStatement.setString(4, student.getEmail());
                             preparedStatement.executeUpdate();
                         }
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO students (id, name, email) VALUES (?, ?, ?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO students (id) VALUES (?)");
                         for (Student student : studentList) {
                             preparedStatement.setLong(1, student.getId());
-                            preparedStatement.setString(2, student.getEmail());
-                            preparedStatement.setString(3, student.getEmail());
                             preparedStatement.executeUpdate();
                         }
 
@@ -161,11 +159,11 @@ public class ReadJson {
 
                         for (Professor professor : professorList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO users (id,username,email,password) VALUES (?,?,?,?)");
+                                preparedStatement = connection.prepareStatement("INSERT INTO users (id,email,password,username) VALUES (?,?, ?, ?)");
                                 preparedStatement.setLong(1, professor.getId());
                                 preparedStatement.setString(2, professor.getEmail());
-                                preparedStatement.setString(3, professor.getEmail());
-                                preparedStatement.setString(4, hashedPassword);
+                                preparedStatement.setString(3, professor.getPassword());
+                                preparedStatement.setString(4, professor.getEmail());
                                 preparedStatement.executeUpdate();
                             } catch (SQLException e) {
                                 System.out.println("Professor already exists:" + professor.getId());
@@ -194,10 +192,8 @@ public class ReadJson {
 
                         for (Professor professor : professorList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO professors (id, name, email) VALUES (?, ?, ?)");
+                                preparedStatement = connection.prepareStatement("INSERT INTO professors (id) VALUES (?)");
                                 preparedStatement.setLong(1, professor.getId());
-                                preparedStatement.setString(2, professor.getEmail());
-                                preparedStatement.setString(3, professor.getEmail());
                                 preparedStatement.executeUpdate();
                             } catch (SQLException e) {
                                 System.out.println("Professor already exists:" + professor.getId());
@@ -205,7 +201,7 @@ public class ReadJson {
                         }
 
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, name, term, youtube_link, report_link, group_id,project_status) VALUES (?, ?, ?, ?, ?, ?,?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, name, term, youtube_link, report_link, group_id,eproject_status) VALUES (?, ?, ?, ?, ?, ?,?)");
                         preparedStatement.setLong(1, project.getId());
                         preparedStatement.setString(2, project.getName());
                         preparedStatement.setString(3, project.getTerm());
