@@ -33,6 +33,7 @@ public class ProjectsController {
 
 
     @GetMapping("/getByGroup")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public DataResult<List<Project>> getByGroup(@RequestParam Long groupId) {
         return projectService.getAllByGroup_Id(groupId);
     }
@@ -53,7 +54,7 @@ public class ProjectsController {
     }
 
 
-    @GetMapping("/getProjects")
+    @PostMapping("/getProjects")
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public DataResult<List<ProjectDto>> getProjects(@RequestBody ProjectRequestDto projectRequestDto) {
         return this.projectService.getAll(projectRequestDto.getPageNo(), projectRequestDto.getPageSize());
