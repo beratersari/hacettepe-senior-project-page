@@ -7,6 +7,7 @@ import seniorproject.core.utilities.results.DataResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import seniorproject.models.concretes.Project;
 import seniorproject.models.dto.ProjectDto;
+import seniorproject.models.dto.ProjectRequestDto;
 
 import java.util.List;
 
@@ -51,4 +52,10 @@ public class ProjectsController {
         return projectService.findAllByAuthorNameContaining(authorName);
     }
 
+
+    @GetMapping("/getProjects")
+    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    public DataResult<List<ProjectDto>> getProjects(@RequestBody ProjectRequestDto projectRequestDto) {
+        return this.projectService.getAll(projectRequestDto.getPageNo(), projectRequestDto.getPageSize());
+    }
 }
