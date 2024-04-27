@@ -18,13 +18,6 @@ public class Student extends User {
     @JoinColumn(name = "id")
     private long id;
 
-
-    @Column(nullable = true)
-    private String name;
-
-    @Column(nullable = false, unique = true)
-    private String email;
-
     @ManyToMany
     @JoinTable(
             name = "student_group",

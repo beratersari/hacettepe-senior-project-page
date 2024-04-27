@@ -47,6 +47,21 @@ public class ProjectManager implements ProjectService {
                 .map(Project::toProjectDto)
                 .collect(Collectors.toList());
 
+        // Author names are added to the projectDto
+        for (Project project : projects) {
+            ProjectDto projectDto = project.toProjectDto();
+            List<String> authorNames = new ArrayList<>();
+
+            for (Professor professor : project.getProfessors()) {
+                authorNames.add(professor.getUsername());
+            }
+
+            project.getGroup().getStudents().forEach(student -> authorNames.add(student.getUsername()));
+
+            projectDto.setAuthorNames(authorNames);
+            projectDtos.add(projectDto);
+        }
+
         long totalProjects = projectPage.getTotalElements();
 
         return new SuccessDataResult<>(projectDtos, pageSize, totalProjects, projectPage.getTotalPages(), pageNo);
@@ -83,10 +98,10 @@ public class ProjectManager implements ProjectService {
             List<String> authorNames = new ArrayList<>();
 
             for (Professor professor : project.getProfessors()) {
-                authorNames.add(professor.getName());
+                authorNames.add(professor.getUsername());
             }
 
-            project.getGroup().getStudents().forEach(student -> authorNames.add(student.getName()));
+            project.getGroup().getStudents().forEach(student -> authorNames.add(student.getUsername()));
 
             projectDto.setAuthorNames(authorNames);
             projectDtos.add(projectDto);
@@ -105,11 +120,11 @@ public class ProjectManager implements ProjectService {
             List<String> authorNames = new ArrayList<>();
 
             for (Professor professor : project.getProfessors()) {
-                authorNames.add(professor.getName());
+                authorNames.add(professor.getUsername());
             }
 
             for (Student student : project.getGroup().getStudents()) {
-                authorNames.add(student.getName());
+                authorNames.add(student.getUsername());
             }
 
             projectDto.setAuthorNames(authorNames);
