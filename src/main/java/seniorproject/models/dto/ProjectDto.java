@@ -8,7 +8,7 @@ import java.util.List;
 public class ProjectDto {
 
     private long id;
-    private String name;
+    private String title;
     private String term;
     private String youtubeLink;
     private String reportLink;
@@ -18,5 +18,6 @@ public class ProjectDto {
     private List<Long> applicationIds;
     private String projectStatus;
     private List<String> authorNames = new ArrayList<>();
+    private List<String> keywords = new ArrayList<>();
 
 }

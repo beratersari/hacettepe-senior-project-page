@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class ProjectRequestDto {
 
-    ProjectSearchDto projectSearchDto;
-    ProjectSortDto projectSortDto;
+    ProjectSearchDto search;
+    ProjectSortDto sort;
 
     int pageNo;
     int pageSize;

@@ -15,11 +15,14 @@ import seniorproject.models.concretes.Project;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import seniorproject.models.concretes.Student;
+import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import seniorproject.models.dto.ProjectRequestDto;
+
 
 @Service
 public class ProjectManager implements ProjectService {
@@ -37,84 +40,29 @@ public class ProjectManager implements ProjectService {
         this.applicationDao = applicationDao;
     }
 
-    @Override
-    public DataResult<List<ProjectDto>> getAll(int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<Project> projectPage = projectDao.findAll(pageable);
+    public DataResult<List<ProjectDto>> searchAndSortProjects(EType searchType, String searchTerm, String sortType, Sort.Direction sortDirection, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortDirection, sortType));
+        Page<Project> projectPage;
+        switch (searchType) {
+            case TITLE:
+                projectPage = projectDao.findByTitleContainingIgnoreCase(searchTerm, pageable);
+                break;
+
+            case AUTHOR:
+                projectPage = projectDao.findByAuthorNameContainingIgnoreCase(searchTerm, pageable);
+                break;
+
+            case KEYWORDS:
+                projectPage = projectDao.findByKeywordsContainingIgnoreCase(searchTerm, pageable);
+                break;
+
+            default:
+                throw new IllegalArgumentException("Unsupported search type: " + searchType);
+        }
 
         List<Project> projects = projectPage.getContent();
-        List<ProjectDto> projectDtos = projects.stream()
-                .map(Project::toProjectDto)
-                .collect(Collectors.toList());
-
-        // Author names are added to the projectDto
-        for (Project project : projects) {
-            ProjectDto projectDto = project.toProjectDto();
-            List<String> authorNames = new ArrayList<>();
-
-            for (Professor professor : project.getProfessors()) {
-                authorNames.add(professor.getUsername());
-            }
-
-            project.getGroup().getStudents().forEach(student -> authorNames.add(student.getUsername()));
-
-            projectDto.setAuthorNames(authorNames);
-            projectDtos.add(projectDto);
-        }
-
-        long totalProjects = projectPage.getTotalElements();
-
-        return new SuccessDataResult<>(projectDtos, pageSize, totalProjects, projectPage.getTotalPages(), pageNo);
-    }
-
-
-
-    @Override
-    public DataResult<List<Project>> getAllByGroup_Id(Long groupId) {
-        List<Project> projects = projectDao.findAllByGroup_Id(groupId);
-        return new SuccessDataResult<>(projects, "Projects listed.");
-    }
-
-    @Override
-    public DataResult<List<ProjectDto>> getSortedByNames() {
-        Sort sort = Sort.by(Sort.Direction.ASC, "name");
-        List<Project> projects = projectDao.findAll(sort);
-        List<ProjectDto> projectDtos = projects.stream()
-                .map(Project::toProjectDto)
-                .collect(Collectors.toList());
-        return new SuccessDataResult<>(projectDtos, "Projects listed.");
-    }
-
-    // Searchler yapay zeka ile güncellenecek
-    @Override
-    public DataResult<List<ProjectDto>> getByTitle(String title) {
-        List<Project> projects = projectDao.findAllByNameLikeIgnoreCase(title);
-
-        System.out.println(projects.size());
-
         List<ProjectDto> projectDtos = new ArrayList<>();
-        for (Project project : projects) {
-            ProjectDto projectDto = project.toProjectDto();
-            List<String> authorNames = new ArrayList<>();
 
-            for (Professor professor : project.getProfessors()) {
-                authorNames.add(professor.getUsername());
-            }
-
-            project.getGroup().getStudents().forEach(student -> authorNames.add(student.getUsername()));
-
-            projectDto.setAuthorNames(authorNames);
-            projectDtos.add(projectDto);
-        }
-
-        return new SuccessDataResult<>(projectDtos, "Projects listed.");
-    }
-
-    @Override
-    public DataResult<List<ProjectDto>> findAllByAuthorNameContaining(String authorName) {
-        List<Project> projects = projectDao.findAllByAuthorNameContaining(authorName);
-
-        List<ProjectDto> projectDtos = new ArrayList<>();
         for (Project project : projects) {
             ProjectDto projectDto = project.toProjectDto();
             List<String> authorNames = new ArrayList<>();
@@ -131,13 +79,8 @@ public class ProjectManager implements ProjectService {
             projectDtos.add(projectDto);
         }
 
-        return new SuccessDataResult<>(projectDtos, "Projects listed.");
-    }
-
-    @Override
-    public DataResult<List<ProjectDto>> getByKeywords(String keyword) {
-        // TO DO
-        return null;
+        long totalProjects = projectPage.getTotalElements();
+        return new SuccessDataResult<>(projectDtos, pageSize, totalProjects, projectPage.getTotalPages(), pageNo);
     }
 
 }

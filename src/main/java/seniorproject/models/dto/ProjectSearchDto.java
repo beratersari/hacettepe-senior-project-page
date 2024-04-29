@@ -1,6 +1,9 @@
 package seniorproject.models.dto;
 
+import lombok.Data;
+
+@Data
 public class ProjectSearchDto {
-    private String type;
+    private EType type;
     private String value;
 }

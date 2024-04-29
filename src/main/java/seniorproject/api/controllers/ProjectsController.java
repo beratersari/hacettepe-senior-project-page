@@ -1,11 +1,12 @@
 package seniorproject.api.controllers;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import seniorproject.business.abstracts.ProjectService;
 import seniorproject.core.utilities.results.DataResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import seniorproject.models.concretes.Project;
+import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.dto.ProjectRequestDto;
 
@@ -24,39 +25,24 @@ public class ProjectsController {
         this.projectService = projectService;
     }
 
-
-    @GetMapping("/getAllByPage")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
-    public DataResult<List<ProjectDto>> getAllByPage(@RequestParam(name = "pageNo") int pageNo, @RequestParam("pageSize") int pageSize) {
-        return this.projectService.getAll(pageNo, pageSize);
-    }
-
-
-    @GetMapping("/getByGroup")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public DataResult<List<Project>> getByGroup(@RequestParam Long groupId) {
-        return projectService.getAllByGroup_Id(groupId);
-    }
-
-    @GetMapping("/getSortedByNames")
-    public DataResult<List<ProjectDto>> getSortedByNames() {
-        return projectService.getSortedByNames();
-    }
-
-    @GetMapping("/getByTitle")
-    public DataResult<List<ProjectDto>> getByTitle(@RequestParam String title) {
-        return projectService.getByTitle(title);
-    }
-
-    @GetMapping("/getByAuthorName")
-    public DataResult<List<ProjectDto>> findAllByAuthorNameContaining(@RequestParam String authorName) {
-        return projectService.findAllByAuthorNameContaining(authorName);
-    }
-
-
     @PostMapping("/getProjects")
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public DataResult<List<ProjectDto>> getProjects(@RequestBody ProjectRequestDto projectRequestDto) {
-        return this.projectService.getAll(projectRequestDto.getPageNo(), projectRequestDto.getPageSize());
+        if (projectRequestDto.getSearch() == null || !projectRequestDto.getSort().getType().equals("title")) {
+            return projectService.searchAndSortProjects(EType.TITLE, "", "id", Sort.Direction.ASC, projectRequestDto.getPageNo(), projectRequestDto.getPageSize());
+        }
+
+        EType searchType = projectRequestDto.getSearch().getType();
+        String searchTerm = projectRequestDto.getSearch().getValue();
+        String sortType = projectRequestDto.getSort().getType();
+        String sortDirection = projectRequestDto.getSort().getDirection();
+        int pageNumber = projectRequestDto.getPageNo();
+        int pageSize = projectRequestDto.getPageSize();
+
+        Sort.Direction direction = Sort.Direction.fromString(sortDirection);
+        return projectService.searchAndSortProjects(searchType,searchTerm, sortType, direction, pageNumber, pageSize);
+
     }
+
+
 }

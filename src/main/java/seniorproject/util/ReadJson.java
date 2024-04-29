@@ -63,7 +63,7 @@ public class ReadJson {
 
                     Project project = new Project();
                     project.setId(generateProjectId());
-                    project.setName(projectName);
+                    project.setTitle(projectName);
                     project.setTerm(projectTerm);
                     project.setYoutubeLink(youtubeLink);
                     project.setReportLink(reportLink);
@@ -201,9 +201,9 @@ public class ReadJson {
                         }
 
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, name, term, youtube_link, report_link, group_id,eproject_status) VALUES (?, ?, ?, ?, ?, ?,?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, term, youtube_link, report_link, group_id,eproject_status) VALUES (?, ?, ?, ?, ?, ?,?)");
                         preparedStatement.setLong(1, project.getId());
-                        preparedStatement.setString(2, project.getName());
+                        preparedStatement.setString(2, project.getTitle());
                         preparedStatement.setString(3, project.getTerm());
                         preparedStatement.setString(4, project.getYoutubeLink());
                         preparedStatement.setString(5, project.getReportLink());

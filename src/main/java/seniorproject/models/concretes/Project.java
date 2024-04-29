@@ -20,7 +20,7 @@ public class Project {
     private long id;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column(nullable = false)
     private String term;
@@ -51,10 +51,19 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private EProjectStatus EProjectStatus;
 
+    @ManyToMany
+    @JoinTable(
+            name = "project_keywords",
+            joinColumns = @JoinColumn(name = "project_id"),
+            inverseJoinColumns = @JoinColumn(name = "keyword_id")
+    )
+    private List<Keyword> keywords;
+
+
     public ProjectDto toProjectDto() {
         ProjectDto projectDto = new ProjectDto();
         projectDto.setId(this.id);
-        projectDto.setName(this.name);
+        projectDto.setTitle(this.title);
         projectDto.setTerm(this.term);
         projectDto.setYoutubeLink(this.youtubeLink);
         projectDto.setReportLink(this.reportLink);
@@ -62,6 +71,8 @@ public class Project {
         projectDto.setProfessorIds(this.professors.stream().map(Professor::getId).collect(Collectors.toList()));
         projectDto.setGroupId(this.group.getId());
         projectDto.setApplicationIds(this.applications.stream().map(Application::getId).collect(Collectors.toList()));
+        projectDto.setProjectStatus(this.EProjectStatus.toString());
+        projectDto.setKeywords(this.keywords.stream().map(Keyword::getName).collect(Collectors.toList()));
         return projectDto;
     }
 
