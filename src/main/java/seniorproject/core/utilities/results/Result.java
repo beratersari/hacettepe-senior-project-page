@@ -13,7 +13,6 @@ public class Result {
     private long totalElements;
     private int totalPages;
     private int number;
-
     public Result(boolean success) {
         this.success = success;
     }
@@ -30,5 +29,6 @@ public class Result {
         this.totalPages = totalPages;
         this.number = number;
     }
+
 
 }

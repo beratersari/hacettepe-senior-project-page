@@ -1,15 +1,18 @@
 package seniorproject.models.concretes;
 
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Table(name = "announcements")
-public class Announcement {
+@Table(name = "keywords")
+public class Keyword {
     @Id
     @GeneratedValue(generator = "sequence-generator")
     @GenericGenerator(
@@ -21,9 +24,13 @@ public class Announcement {
                     @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
             }
     )
+    @Column(name = "keyword_id")
     private long id;
-    private String title;
-    private String content;
-    private String date;
 
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    public Keyword(String keyword) {
+        this.name = keyword;
+    }
 }

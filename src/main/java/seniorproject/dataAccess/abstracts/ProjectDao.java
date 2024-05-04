@@ -1,17 +1,16 @@
 package seniorproject.dataAccess.abstracts;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import seniorproject.models.concretes.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
+import java.util.UUID;
 
-public interface ProjectDao extends JpaRepository<Project, Long>{
-
-    List<Project> findAllByGroup_Id(Long groupId); // Onemli ozellik !!!
-
-    @Query(value = "SELECT p FROM Project p where lower(p.name) like %:name%")
-    List<Project> findAllByNameLikeIgnoreCase(String name);
+public interface ProjectDao extends JpaRepository<Project, UUID>{
 
     @Query(value =
             "SELECT DISTINCT p " +
@@ -20,8 +19,20 @@ public interface ProjectDao extends JpaRepository<Project, Long>{
                     "LEFT JOIN p.group.students s " +
                     "WHERE LOWER(pr.username) LIKE %:authorName% OR LOWER(s.username) LIKE %:authorName%"
     )
-    List<Project> findAllByAuthorNameContaining(@Param("authorName") String authorName);
+    Page<Project> findByAuthorNameContainingIgnoreCase(@Param("authorName") String authorName, Pageable pageable);
+
+    @Query(value = "SELECT p FROM Project p WHERE lower(p.title) like %:title%")
+    Page<Project> findByTitleContainingIgnoreCase(@Param("title") String title, Pageable pageable);
+
+    @Query(value = "SELECT p FROM Project p LEFT JOIN p.keywords k WHERE lower(k.name) like %:keyword%")
+    Page<Project> findByKeywordsContainingIgnoreCase(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query(value = "SELECT p FROM Project p LEFT JOIN SeniorProject sp ON p.projectType.id = sp.id WHERE sp.term like %:searchTerm%")
+    Page<Project> findByProjectTypeContainingIgnoreCase(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    List<Project> findAllByGroupId(Long group_id);
+
+    List<Project> findAllByProfessorsId(Long professor_id);
 
 
 }
-

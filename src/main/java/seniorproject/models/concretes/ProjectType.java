@@ -1,22 +1,24 @@
 package seniorproject.models.concretes;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import seniorproject.models.concretes.enums.EProjectTypeStatus;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-@Entity
-@Table(name = "users")
 @Data
+@Table(name = "project_types")
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
-public class User {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "groups"})
+public class ProjectType {
     @Id
     @GeneratedValue(generator = "sequence-generator")
     @GenericGenerator(
@@ -29,22 +31,18 @@ public class User {
             }
     )
     @JoinColumn(name = "id")
-    private long id;
+    private Long id;
 
-    @Column
-    private String username;
+    private String name;
 
-    @Column
-    private String email;
+    @Enumerated(EnumType.STRING)
+    private EProjectTypeStatus activeness;
 
-    @Column
-    private String password;
+    @OneToMany(mappedBy = "projectType")
+    @JsonManagedReference
+    private List<Timeline> timelines;
 
-    @Setter
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_to_roles",
-            joinColumns = @JoinColumn(name="user_id"),
-            inverseJoinColumns = @JoinColumn(name="role_id"))
-    private Set<Role> roles = new HashSet<>();
-
+    @OneToMany(mappedBy = "projectType")
+    @JsonManagedReference
+    private List<Project> projects;
 }

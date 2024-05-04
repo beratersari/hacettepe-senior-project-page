@@ -1,15 +1,14 @@
 package seniorproject.models.concretes;
 
-
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
 @Data
-@Entity
-@Table(name = "announcements")
-public class Announcement {
+public class Document {
     @Id
     @GeneratedValue(generator = "sequence-generator")
     @GenericGenerator(
@@ -21,9 +20,7 @@ public class Announcement {
                     @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
             }
     )
-    private long id;
-    private String title;
-    private String content;
-    private String date;
+    private Long id;
+    private Timeline projectInTimeline;
 
 }

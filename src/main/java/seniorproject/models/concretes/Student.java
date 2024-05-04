@@ -13,7 +13,6 @@ import java.util.List;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "groups"})
 public class Student extends User {
     @MapsId
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @JoinColumn(name = "id")
     private long id;

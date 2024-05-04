@@ -1,20 +1,20 @@
 package seniorproject.business.abstracts;
 
+import org.springframework.data.domain.Sort;
 import seniorproject.core.utilities.results.DataResult;
-import seniorproject.models.concretes.Project;
+import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
+import seniorproject.models.dto.projectRequests.ProjectCreateDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface ProjectService {
-    DataResult<List<ProjectDto>> getAll(int pageNo, int pageSize);
-
-    DataResult<List<Project>> getAllByGroup_Id(Long groupId);
-
-    DataResult<List<ProjectDto>> getSortedByNames();
-
-    DataResult<List<ProjectDto>> getByTitle(String title);
-
-    DataResult<List<ProjectDto>> findAllByAuthorNameContaining(String authorName);
-    DataResult<List<ProjectDto>> getByKeywords(String keyword);
+    DataResult<List<ProjectDto>> searchAndSortProjects(EType searchType, String searchTerm, String sortType, Sort.Direction sortDirection, int pageNumber, int pageSize, Long sessionId);
+    DataResult<List<ProjectDto>> searchProjectsWithTypes(String searchTerm, int pageNumber, int pageSize, Long sessionId);
+    DataResult<List<ProjectDto>> searchActiveSeniorProjects(int pageNumber, int pageSize, Long sessionId);
+    DataResult<List<ProjectDto>> getProjectByStudentId(Long studentId);
+    DataResult<List<ProjectDto>> getProjectByProfessorId(Long professorId);
+    DataResult<ProjectDto> getProjectByProjectId(UUID projectId);
+    DataResult<ProjectDto> createSeniorProjectByProfessor(ProjectCreateDto projectCreateDto);
 }

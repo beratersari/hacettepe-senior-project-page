@@ -1,4 +1,4 @@
-package seniorproject.models.concretes;
+package seniorproject.models.concretes.enums;
 
 public enum EProjectStatus {
     OFFERED,
