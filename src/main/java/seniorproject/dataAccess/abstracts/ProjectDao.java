@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import seniorproject.models.concretes.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.List;
 
 public interface ProjectDao extends JpaRepository<Project, Long>{
@@ -24,4 +25,13 @@ public interface ProjectDao extends JpaRepository<Project, Long>{
 
     @Query(value = "SELECT p FROM Project p LEFT JOIN p.keywords k WHERE lower(k.name) like %:keyword%")
     Page<Project> findByKeywordsContainingIgnoreCase(@Param("keyword") String keyword, Pageable pageable);
+
+    @Query(value = "SELECT p FROM Project p LEFT JOIN SeniorProject sp ON p.projectType.id = sp.id WHERE sp.term like %:searchTerm%")
+    Page<Project> findByProjectTypeContainingIgnoreCase(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    List<Project> findAllByGroupId(Long group_id);
+
+    List<Project> findAllByProfessorsId(Long professor_id);
+
+
 }

@@ -1,8 +1,10 @@
 package seniorproject.models.concretes;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
+import org.hibernate.annotations.GenericGenerator;
 import seniorproject.models.dto.ProjectDto;
 
 import javax.persistence.*;
@@ -15,20 +17,33 @@ import java.util.stream.Collectors;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "applications", "professors", "group"})
 public class Project {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "sequence-generator")
+    @GenericGenerator(
+            name = "sequence-generator",
+            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+            parameters = {
+                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "admin_sequence"),
+                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
+                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
+            }
+    )
     @Column(name = "project_id")
     private long id;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
-    private String term;
+    @ManyToOne
+    @JoinColumn(name = "project_type_id")
+    @JsonBackReference
+    private ProjectType projectType;
 
     @Column(name = "youtube_link")
     private String youtubeLink;
+
     @Column(name = "report_link")
     private String reportLink;
+
     private String description;
 
     @ManyToMany
@@ -49,7 +64,7 @@ public class Project {
     private List<Application> applications;
 
     @Enumerated(EnumType.STRING)
-    private EProjectStatus EProjectStatus;
+    private seniorproject.models.concretes.enums.EProjectStatus EProjectStatus;
 
     @ManyToMany
     @JoinTable(
@@ -59,12 +74,11 @@ public class Project {
     )
     private List<Keyword> keywords;
 
-
     public ProjectDto toProjectDto() {
         ProjectDto projectDto = new ProjectDto();
         projectDto.setId(this.id);
         projectDto.setTitle(this.title);
-        projectDto.setTerm(this.term);
+        projectDto.setTerm(((SeniorProject)this.projectType).getTerm());
         projectDto.setYoutubeLink(this.youtubeLink);
         projectDto.setReportLink(this.reportLink);
         projectDto.setDescription(this.description);
@@ -73,8 +87,7 @@ public class Project {
         projectDto.setApplicationIds(this.applications.stream().map(Application::getId).collect(Collectors.toList()));
         projectDto.setProjectStatus(this.EProjectStatus.toString());
         projectDto.setKeywords(this.keywords.stream().map(Keyword::getName).collect(Collectors.toList()));
+        projectDto.setProjectType(this.projectType.getName());
         return projectDto;
     }
-
-
 }

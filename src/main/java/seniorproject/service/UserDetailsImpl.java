@@ -1,5 +1,6 @@
 package seniorproject.service;
 
+import lombok.Getter;
 import seniorproject.models.concretes.User;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -9,10 +10,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
 
+    @Getter
     private Long id;
     private String username;
     private String email;
@@ -74,7 +77,4 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
-    public Long getId() {
-        return id;
-    }
 }

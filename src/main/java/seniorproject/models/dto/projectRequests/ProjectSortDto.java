@@ -1,4 +1,4 @@
-package seniorproject.models.dto;
+package seniorproject.models.dto.projectRequests;
 
 
 import lombok.Data;

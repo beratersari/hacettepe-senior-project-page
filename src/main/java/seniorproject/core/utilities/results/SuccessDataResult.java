@@ -21,4 +21,9 @@ public class SuccessDataResult<T> extends DataResult<T> {
         super(data, true, null, pageSize, totalElements, totalPages, number);
     }
 
+    public SuccessDataResult(T data, int pageSize, long totalElements, int totalPages, int number, String message) {
+        super(data, true, message, pageSize, totalElements, totalPages, number);
+    }
+
+
 }

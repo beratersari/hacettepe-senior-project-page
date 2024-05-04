@@ -8,7 +8,9 @@ import seniorproject.core.utilities.results.DataResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
-import seniorproject.models.dto.ProjectRequestDto;
+import seniorproject.models.dto.projectRequests.ProjectCreateDto;
+import seniorproject.models.dto.projectRequests.ProjectRequestDto;
+import seniorproject.models.dto.projectRequests.ProjectWithTypesRequestDto;
 
 import java.util.List;
 
@@ -28,8 +30,9 @@ public class ProjectsController {
     @PostMapping("/getProjects")
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public DataResult<List<ProjectDto>> getProjects(@RequestBody ProjectRequestDto projectRequestDto) {
+        Long sessionId = projectRequestDto.getSessionId();
         if (projectRequestDto.getSearch() == null || !projectRequestDto.getSort().getType().equals("title")) {
-            return projectService.searchAndSortProjects(EType.TITLE, "", "id", Sort.Direction.ASC, projectRequestDto.getPageNo(), projectRequestDto.getPageSize());
+            return projectService.searchAndSortProjects(EType.TITLE, "", "id", Sort.Direction.ASC, projectRequestDto.getPageNo(), projectRequestDto.getPageSize(),sessionId);
         }
 
         EType searchType = projectRequestDto.getSearch().getType();
@@ -40,9 +43,52 @@ public class ProjectsController {
         int pageSize = projectRequestDto.getPageSize();
 
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
-        return projectService.searchAndSortProjects(searchType,searchTerm, sortType, direction, pageNumber, pageSize);
+        return projectService.searchAndSortProjects(searchType,searchTerm, sortType, direction, pageNumber, pageSize,sessionId);
 
     }
 
+    @PostMapping("/searchSeniorProjectWithTerm")
+    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    public DataResult<List<ProjectDto>> searchSeniorProjectWithTerm(@RequestBody ProjectWithTypesRequestDto projectWithTypesRequest) {
+        String searchTerm = projectWithTypesRequest.getSearchTerm();
+        int pageNumber = projectWithTypesRequest.getPageNumber();
+        int pageSize = projectWithTypesRequest.getPageSize();
+        Long sessionId = projectWithTypesRequest.getSessionId();
+        return projectService.searchProjectsWithTypes(searchTerm, pageNumber, pageSize, sessionId);
+    }
+
+    @PostMapping("/getActiveSeniorProjects")
+    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    public DataResult<List<ProjectDto>> getActiveSeniorProjects(@RequestBody ProjectWithTypesRequestDto projectWithTypesRequest) {
+        int pageNumber = projectWithTypesRequest.getPageNumber();
+        int pageSize = projectWithTypesRequest.getPageSize();
+        Long sessionId = projectWithTypesRequest.getSessionId();
+        return projectService.searchActiveSeniorProjects(pageNumber, pageSize, sessionId);
+    }
+
+    // studentId yerine session id yaz, page number ve page size ekle bunları request body ile sağla
+    @PostMapping("/getProjectByStudentId")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public DataResult<List<ProjectDto>> getProjectByStudentId(Long studentId) {
+        return this.projectService.getProjectByStudentId(studentId);
+    }
+
+    @PostMapping("/getProjectByProjectId")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public DataResult<ProjectDto> getProjectByProjectId(Long projectId) {
+        return this.projectService.getProjectByProjectId(projectId);
+    }
+
+    @PostMapping("/getProjectByProfessorId")
+    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    public DataResult<List<ProjectDto>> getProjectByProfessorId(Long professorId) {
+        return this.projectService.getProjectByProfessorId(professorId);
+    }
+
+    @PostMapping("/createSeniorProjectByProfessor")
+    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    public DataResult<ProjectDto> createSeniorProjectByProfessor(@RequestBody ProjectCreateDto projectCreateDto) {
+        return this.projectService.createSeniorProjectByProfessor(projectCreateDto);
+    }
 
 }

@@ -1,23 +1,29 @@
 package seniorproject.util;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.RestController;
+import seniorproject.business.abstracts.RoleService;
 import seniorproject.models.concretes.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import seniorproject.models.concretes.enums.EProjectStatus;
+import seniorproject.models.concretes.enums.EProjectTypeStatus;
+import seniorproject.models.concretes.enums.ERole;
 
 import java.io.File;
 import java.sql.*;
 import java.text.Normalizer;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
+@RestController
 public class ReadJson {
 
     private static long groupIdCounter = 1;  // Counter for group IDs
     private static long userIdCounter = 1;  // Counter for professor IDs
     private static long projectIdCounter = 1;  // Counter for project IDs
+    private static long projectTypeIdCounter = 1;  // Counter for project type IDs
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -64,11 +70,61 @@ public class ReadJson {
                     Project project = new Project();
                     project.setId(generateProjectId());
                     project.setTitle(projectName);
-                    project.setTerm(projectTerm);
+                    try{
+                        preparedStatement = connection.prepareStatement("SELECT id FROM project_types WHERE name = ?");
+                        preparedStatement.setString(1, "Senior Project" + " - " + projectTerm);
+                        ResultSet resultSet = preparedStatement.executeQuery();
+                        SeniorProject seniorProject = new SeniorProject();
+                        seniorProject.setTerm(projectTerm);
+                        seniorProject.setName("Senior Project" + " - " + projectTerm);
+                        if(Objects.equals(projectTerm, "2022-2023")){
+                            seniorProject.setActiveness(EProjectTypeStatus.ACTIVE);
+                        }
+                        else{
+                            seniorProject.setActiveness(EProjectTypeStatus.ARCHIVED);
+                        }
+
+                        if (resultSet.next()) {
+                            long existingProjectTypeId = resultSet.getLong("id");
+                            if (existingProjectTypeId != 0) {
+                                seniorProject.setId(existingProjectTypeId);
+                            } else {
+                                seniorProject.setId(generateProjectTypeId());
+                            }
+                        }
+                        else {
+                            seniorProject.setId(generateProjectTypeId());
+                        }
+                        project.setProjectType(seniorProject);
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                     project.setYoutubeLink(youtubeLink);
                     project.setReportLink(reportLink);
                     project.setDescription(abstractText);
                     project.setEProjectStatus(EProjectStatus.WORKING);
+
+
+                    try{
+                        preparedStatement = connection.prepareStatement("INSERT INTO project_types (id, name, activeness) VALUES (?, ?, ?)");
+                        preparedStatement.setLong(1, project.getProjectType().getId());
+                        preparedStatement.setString(2, "Senior Project" + " - " + projectTerm);
+                        preparedStatement.setString(3, String.valueOf(project.getProjectType().getActiveness()));
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException e) {
+                        System.out.println("Project Type already exists:" + project.getProjectType().getId());
+                    }
+
+                    try{
+                        preparedStatement = connection.prepareStatement("INSERT INTO senior_projects (id, term) VALUES (?, ?)");
+                        preparedStatement.setLong(1, project.getProjectType().getId());
+                        preparedStatement.setString(2, ((SeniorProject) project.getProjectType()).getTerm());
+                        preparedStatement.executeUpdate();
+                    } catch (SQLException e) {
+                        System.out.println("Senior Projects already exists:" + project.getProjectType().getId());
+
+                    }
 
                     Group group = new Group();
                     group.setId(generateGroupId());
@@ -109,8 +165,9 @@ public class ReadJson {
                     }
 
                     try {
-                        preparedStatement = connection.prepareStatement("INSERT INTO groups (group_id)  VALUES (?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO groups (group_id,name)  VALUES (?,?)");
                         preparedStatement.setLong(1, group.getId());
+                        preparedStatement.setString(2,group.getName());
                         preparedStatement.executeUpdate();
 
                         for(Professor professor: professorList){
@@ -201,10 +258,10 @@ public class ReadJson {
                         }
 
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, term, youtube_link, report_link, group_id,eproject_status) VALUES (?, ?, ?, ?, ?, ?,?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, project_type_id, youtube_link, report_link, group_id,eproject_status) VALUES (?, ?, ?, ?, ?, ?,?)");
                         preparedStatement.setLong(1, project.getId());
                         preparedStatement.setString(2, project.getTitle());
-                        preparedStatement.setString(3, project.getTerm());
+                        preparedStatement.setLong(3, project.getProjectType().getId());
                         preparedStatement.setString(4, project.getYoutubeLink());
                         preparedStatement.setString(5, project.getReportLink());
                         preparedStatement.setLong(6, group.getId());
@@ -240,6 +297,10 @@ public class ReadJson {
 
     private static synchronized long generateProjectId() {
         return projectIdCounter++;
+    }
+
+    private static synchronized long generateProjectTypeId() {
+        return projectTypeIdCounter++;
     }
     public static String TurkishCharacterToEnglish(String text)
     {

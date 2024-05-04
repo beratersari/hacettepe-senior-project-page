@@ -2,7 +2,7 @@ package seniorproject.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import seniorproject.models.concretes.ERole;
+import seniorproject.models.concretes.enums.ERole;
 import seniorproject.models.concretes.Role;
 
 import java.util.Optional;

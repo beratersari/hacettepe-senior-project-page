@@ -1,4 +1,4 @@
 package seniorproject.api.controllers;
 
-public class AnnouncementController {
+public class AnnouncementsController {
 }
