@@ -1,16 +1,13 @@
 package seniorproject.util;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
-import seniorproject.business.abstracts.RoleService;
 import seniorproject.models.concretes.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import seniorproject.models.concretes.enums.EProjectStatus;
 import seniorproject.models.concretes.enums.EProjectTypeStatus;
-import seniorproject.models.concretes.enums.ERole;
 
 import java.io.File;
 import java.sql.*;
@@ -38,10 +35,12 @@ public class ReadJson {
 
             JsonNode jsonNode = objectMapper.readTree(jsonFile);
 
-            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO roles (id, name)  VALUES (?, ?)");
+
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO roles (id, name) VALUES (?, ?)");
             preparedStatement.setLong(1, 1);
             preparedStatement.setString(2, "ROLE_ADMIN");
             preparedStatement.executeUpdate();
+
 
             preparedStatement = connection.prepareStatement("INSERT INTO roles (id, name)  VALUES (?, ?)");
             preparedStatement.setLong(1, 2);
@@ -259,7 +258,7 @@ public class ReadJson {
 
 
                         preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, project_type_id, youtube_link, report_link, group_id,eproject_status) VALUES (?, ?, ?, ?, ?, ?,?)");
-                        preparedStatement.setLong(1, project.getId());
+                        preparedStatement.setObject(1, project.getId());
                         preparedStatement.setString(2, project.getTitle());
                         preparedStatement.setLong(3, project.getProjectType().getId());
                         preparedStatement.setString(4, project.getYoutubeLink());
@@ -270,7 +269,7 @@ public class ReadJson {
 
                         preparedStatement = connection.prepareStatement("INSERT INTO project_professor (project_id, user_id) VALUES (?, ?)");
                         for (Professor professor : professorList) {
-                            preparedStatement.setLong(1, project.getId());
+                            preparedStatement.setObject(1, project.getId());
                             preparedStatement.setLong(2, professor.getId());
                             preparedStatement.executeUpdate();
                         }
@@ -295,8 +294,8 @@ public class ReadJson {
         return userIdCounter++;
     }
 
-    private static synchronized long generateProjectId() {
-        return projectIdCounter++;
+    private static synchronized UUID generateProjectId() {
+        return UUID.randomUUID();
     }
 
     private static synchronized long generateProjectTypeId() {

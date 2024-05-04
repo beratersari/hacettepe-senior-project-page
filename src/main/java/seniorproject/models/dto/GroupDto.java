@@ -9,5 +9,5 @@ public class GroupDto {
     private String groupName;
     private List<String> groupMembers;
     private List<ApplicationDto> applications;
-    private List<Long> projectIds;
+    private List<String> projectIds;
 }

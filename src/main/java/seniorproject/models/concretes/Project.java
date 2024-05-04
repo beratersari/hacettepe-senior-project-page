@@ -9,6 +9,7 @@ import seniorproject.models.dto.ProjectDto;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
@@ -17,18 +18,9 @@ import java.util.stream.Collectors;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "applications", "professors", "group"})
 public class Project {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
-    @GenericGenerator(
-            name = "sequence-generator",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "admin_sequence"),
-                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
-            }
-    )
+    @GeneratedValue(generator = "uuid2")
     @Column(name = "project_id")
-    private long id;
+    private UUID id;
 
     @Column(nullable = false)
     private String title;
@@ -76,7 +68,7 @@ public class Project {
 
     public ProjectDto toProjectDto() {
         ProjectDto projectDto = new ProjectDto();
-        projectDto.setId(this.id);
+        projectDto.setId(String.valueOf(this.id));
         projectDto.setTitle(this.title);
         projectDto.setTerm(((SeniorProject)this.projectType).getTerm());
         projectDto.setYoutubeLink(this.youtubeLink);

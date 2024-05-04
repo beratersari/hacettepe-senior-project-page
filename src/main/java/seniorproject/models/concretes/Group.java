@@ -48,7 +48,7 @@ public class Group {
         groupDto.setGroupName(this.name);
         groupDto.setGroupMembers(this.students.stream().map(Student::getUsername).collect(Collectors.toList()));
         groupDto.setApplications(this.applications.stream().map(Application::toApplicationDto).collect(Collectors.toList()));
-        groupDto.setProjectIds(this.projects.stream().map(Project::getId).collect(Collectors.toList()));
+        groupDto.setProjectIds(this.projects.stream().map(project -> project.getId().toString()).collect(Collectors.toList()));
         return groupDto;
     }
 }

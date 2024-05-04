@@ -15,10 +15,7 @@ import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.concretes.enums.EProjectStatus;
 import seniorproject.models.dto.projectRequests.ProjectCreateDto;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -106,7 +103,7 @@ public class ProjectManager implements ProjectService {
         return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()), "Projects listed.");
     }
 
-    public DataResult<ProjectDto> getProjectByProjectId(Long projectId) {
+    public DataResult<ProjectDto> getProjectByProjectId(UUID projectId) {
         Project project = projectDao.findById(projectId).orElse(null);
         if (project == null) {
             return new ErrorDataResult<>("Project not found.");
@@ -122,7 +119,8 @@ public class ProjectManager implements ProjectService {
         project.setDescription(projectCreateDto.getDescription());
         ProjectType projectType = projectTypeDao.findById(projectCreateDto.getProjectTypeId()).get();
         project.setProjectType(projectType);
-        project.setKeywords(projectCreateDto.getKeywords().stream().map(Keyword::new).collect(Collectors.toList()));
+        // keyword oluştur öyle ekle
+        //project.setKeywords(projectCreateDto.getKeywords().stream().map(Keyword::new).collect(Collectors.toList()));
         project.setEProjectStatus(EProjectStatus.OFFERED);
         List<Professor> professors = new ArrayList<>();
         for (Long professorId : projectCreateDto.getProfessorIds()) {

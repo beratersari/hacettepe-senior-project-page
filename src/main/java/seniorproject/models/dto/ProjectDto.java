@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 public class ProjectDto {
-    private Long id;
+    private String id;
     private String title;
     private String term;
     private String youtubeLink;

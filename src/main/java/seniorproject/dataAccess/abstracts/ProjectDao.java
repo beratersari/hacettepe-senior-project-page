@@ -8,8 +8,9 @@ import seniorproject.models.concretes.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface ProjectDao extends JpaRepository<Project, Long>{
+public interface ProjectDao extends JpaRepository<Project, UUID>{
 
     @Query(value =
             "SELECT DISTINCT p " +

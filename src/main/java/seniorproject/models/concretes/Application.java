@@ -39,7 +39,7 @@ public class Application {
     public ApplicationDto toApplicationDto() {
         ApplicationDto applicationDto = new ApplicationDto();
         applicationDto.setId(this.id);
-        applicationDto.setProjectId(this.project.getId());
+        applicationDto.setProjectId(String.valueOf(this.project.getId()));
         applicationDto.setProjectTitle(this.project.getTitle());
         applicationDto.setGroupId(this.group.getId());
         applicationDto.setStatus(this.status);
