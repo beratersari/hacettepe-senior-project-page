@@ -10,6 +10,7 @@ import seniorproject.models.dto.GroupDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class GroupManager implements GroupService {
@@ -22,7 +23,7 @@ public class GroupManager implements GroupService {
     }
 
     @Override
-    public DataResult<List<GroupDto>> getGroupByStudentId(Long studentId) {
+    public DataResult<List<GroupDto>> getGroupByStudentId(UUID studentId) {
         List<Group> groups = groupDao.findAllByStudentId(studentId);
         List<GroupDto> groupDtos = new ArrayList<>();
 

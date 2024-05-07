@@ -7,6 +7,7 @@ import seniorproject.models.dto.GroupDto;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 
@@ -16,18 +17,9 @@ import java.util.stream.Collectors;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "applications", "projects", "students"})
 public class Group {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
-    @GenericGenerator(
-            name = "sequence-generator",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "admin_sequence"),
-                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
-            }
-    )
+    @GeneratedValue(generator = "uuid2")
     @Column(name = "group_id")
-    private long id;
+    private UUID id;
 
     private String name;
 
@@ -44,7 +36,7 @@ public class Group {
 
     public GroupDto toGroupDto(){
         GroupDto groupDto = new GroupDto();
-        groupDto.setId(this.id);
+        groupDto.setId(String.valueOf(this.id));
         groupDto.setGroupName(this.name);
         groupDto.setGroupMembers(this.students.stream().map(Student::getUsername).collect(Collectors.toList()));
         groupDto.setApplications(this.applications.stream().map(Application::toApplicationDto).collect(Collectors.toList()));

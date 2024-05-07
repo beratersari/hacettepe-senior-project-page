@@ -8,6 +8,7 @@ import seniorproject.core.utilities.results.DataResult;
 import seniorproject.models.dto.ApplicationDto;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
@@ -24,7 +25,7 @@ public class ApplicationsController {
 
     @PostMapping("/getProjectByProfessorId")
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
-    public DataResult<List<ApplicationDto>> getProjectById(Long professorId) {
+    public DataResult<List<ApplicationDto>> getProjectById(UUID professorId) {
         return this.applicationService.getApplicationsByProfessorId(professorId);
     }
 }

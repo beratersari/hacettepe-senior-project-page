@@ -7,6 +7,7 @@ import seniorproject.core.utilities.results.DataResult;
 import seniorproject.models.dto.GroupDto;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
@@ -22,7 +23,7 @@ public class GroupsController {
     }
 
     @PostMapping("/getGroupByStudentId")
-    public DataResult<List<GroupDto>> getGroupByStudentId(Long studentId) {
+    public DataResult<List<GroupDto>> getGroupByStudentId(UUID studentId) {
         return this.groupService.getGroupByStudentId(studentId);
     }
 }

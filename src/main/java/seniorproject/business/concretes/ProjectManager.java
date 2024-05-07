@@ -39,7 +39,7 @@ public class ProjectManager implements ProjectService {
         this.projectTypeDao = projectTypeDao;
     }
 
-    public DataResult<List<ProjectDto>> searchAndSortProjects(EType searchType, String searchTerm, String sortType, Sort.Direction sortDirection, int pageNo, int pageSize,Long sessionId) {
+    public DataResult<List<ProjectDto>> searchAndSortProjects(EType searchType, String searchTerm, String sortType, Sort.Direction sortDirection, int pageNo, int pageSize,UUID sessionId) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortDirection, sortType));
         Page<Project> projectPage;
         switch (searchType) {
@@ -62,14 +62,14 @@ public class ProjectManager implements ProjectService {
         return getListDataResult(pageNo, pageSize, projectPage,null, sessionId);
     }
 
-    public DataResult<List<ProjectDto>> searchProjectsWithTypes(String searchTerm, int pageNo, int pageSize, Long sessionId) {
+    public DataResult<List<ProjectDto>> searchProjectsWithTypes(String searchTerm, int pageNo, int pageSize, UUID sessionId) {
         Pageable pageable = PageRequest.of(pageNo -1, pageSize);
         Page<Project> projectPage = projectDao.findByProjectTypeContainingIgnoreCase(searchTerm, pageable);
         return getListDataResult(pageNo, pageSize, projectPage, searchTerm, sessionId);
     }
 
 
-    public DataResult<List<ProjectDto>> searchActiveSeniorProjects(int pageNo, int pageSize, Long sessionId) {
+    public DataResult<List<ProjectDto>> searchActiveSeniorProjects(int pageNo, int pageSize, UUID sessionId) {
         Pageable pageable = PageRequest.of(pageNo -1, pageSize);
         List<ProjectType> activeProjectTypes = projectTypeDao.findByActiveness();
 
@@ -88,7 +88,7 @@ public class ProjectManager implements ProjectService {
         return getListDataResult(pageNo, pageSize, projectPage,activeTerm, sessionId);
     }
 
-    public DataResult<List<ProjectDto>> getProjectByStudentId(Long studentId) {
+    public DataResult<List<ProjectDto>> getProjectByStudentId(UUID studentId) {
         List<Project> projects = new ArrayList<>();
         for (Group group : groupDao.findAllByStudentId(studentId)) {
             projects.addAll(projectDao.findAllByGroupId(group.getId()));
@@ -98,7 +98,7 @@ public class ProjectManager implements ProjectService {
         return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()), "Projects listed.");
     }
 
-    public DataResult<List<ProjectDto>> getProjectByProfessorId(Long professorId) {
+    public DataResult<List<ProjectDto>> getProjectByProfessorId(UUID professorId) {
         List<Project> projects = projectDao.findAllByProfessorsId(professorId);
         return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()), "Projects listed.");
     }
@@ -123,7 +123,7 @@ public class ProjectManager implements ProjectService {
         //project.setKeywords(projectCreateDto.getKeywords().stream().map(Keyword::new).collect(Collectors.toList()));
         project.setEProjectStatus(EProjectStatus.OFFERED);
         List<Professor> professors = new ArrayList<>();
-        for (Long professorId : projectCreateDto.getProfessorIds()) {
+        for (UUID professorId : projectCreateDto.getProfessorIds()) {
             professorDao.findById(professorId).ifPresent(professors::add);
         }
         Professor professor = professorDao.findById(projectCreateDto.getSessionId()).orElse(null);
@@ -136,7 +136,7 @@ public class ProjectManager implements ProjectService {
         return new SuccessDataResult<>(project.toProjectDto(), "Project created.");
     }
 
-    private DataResult<List<ProjectDto>> getListDataResult(int pageNo, int pageSize, Page<Project> projectPage, String term, Long sessionId) {
+    private DataResult<List<ProjectDto>> getListDataResult(int pageNo, int pageSize, Page<Project> projectPage, String term, UUID sessionId) {
         List<Project> projects = projectPage.getContent();
         List<ProjectDto> projectDtos = new ArrayList<>();
 

@@ -31,7 +31,7 @@ public class ProjectsController {
     @PostMapping("/getProjects")
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public DataResult<List<ProjectDto>> getProjects(@RequestBody ProjectRequestDto projectRequestDto) {
-        Long sessionId = projectRequestDto.getSessionId();
+        UUID sessionId = projectRequestDto.getSessionId();
         if (projectRequestDto.getSearch() == null || !projectRequestDto.getSort().getType().equals("title")) {
             return projectService.searchAndSortProjects(EType.TITLE, "", "id", Sort.Direction.ASC, projectRequestDto.getPageNo(), projectRequestDto.getPageSize(),sessionId);
         }
@@ -54,7 +54,7 @@ public class ProjectsController {
         String searchTerm = projectWithTypesRequest.getSearchTerm();
         int pageNumber = projectWithTypesRequest.getPageNumber();
         int pageSize = projectWithTypesRequest.getPageSize();
-        Long sessionId = projectWithTypesRequest.getSessionId();
+        UUID sessionId = projectWithTypesRequest.getSessionId();
         return projectService.searchProjectsWithTypes(searchTerm, pageNumber, pageSize, sessionId);
     }
 
@@ -63,14 +63,14 @@ public class ProjectsController {
     public DataResult<List<ProjectDto>> getActiveSeniorProjects(@RequestBody ProjectWithTypesRequestDto projectWithTypesRequest) {
         int pageNumber = projectWithTypesRequest.getPageNumber();
         int pageSize = projectWithTypesRequest.getPageSize();
-        Long sessionId = projectWithTypesRequest.getSessionId();
+        UUID sessionId = projectWithTypesRequest.getSessionId();
         return projectService.searchActiveSeniorProjects(pageNumber, pageSize, sessionId);
     }
 
     // studentId yerine session id yaz, page number ve page size ekle bunları request body ile sağla
     @PostMapping("/getProjectByStudentId")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DataResult<List<ProjectDto>> getProjectByStudentId(Long studentId) {
+    public DataResult<List<ProjectDto>> getProjectByStudentId(UUID studentId) {
         return this.projectService.getProjectByStudentId(studentId);
     }
 
@@ -82,7 +82,7 @@ public class ProjectsController {
 
     @PostMapping("/getProjectByProfessorId")
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
-    public DataResult<List<ProjectDto>> getProjectByProfessorId(Long professorId) {
+    public DataResult<List<ProjectDto>> getProjectByProfessorId(UUID professorId) {
         return this.projectService.getProjectByProfessorId(professorId);
     }
 

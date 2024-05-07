@@ -30,9 +30,9 @@ public interface ProjectDao extends JpaRepository<Project, UUID>{
     @Query(value = "SELECT p FROM Project p LEFT JOIN SeniorProject sp ON p.projectType.id = sp.id WHERE sp.term like %:searchTerm%")
     Page<Project> findByProjectTypeContainingIgnoreCase(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-    List<Project> findAllByGroupId(Long group_id);
+    List<Project> findAllByGroupId(UUID group_id);
 
-    List<Project> findAllByProfessorsId(Long professor_id);
+    List<Project> findAllByProfessorsId(UUID professor_id);
 
 
 }

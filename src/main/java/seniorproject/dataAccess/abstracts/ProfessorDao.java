@@ -3,5 +3,7 @@ package seniorproject.dataAccess.abstracts;
 import org.springframework.data.jpa.repository.JpaRepository;
 import seniorproject.models.concretes.Professor;
 
-public interface ProfessorDao extends JpaRepository<Professor, Long> {
+import java.util.UUID;
+
+public interface ProfessorDao extends JpaRepository<Professor, UUID> {
 }

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Data
 public class SeniorProjectDto {
-    private Long id;
+    private UUID id;
     private String name;
     private String term;
     private EProjectTypeStatus activeness;

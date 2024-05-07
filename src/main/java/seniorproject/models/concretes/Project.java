@@ -68,17 +68,24 @@ public class Project {
 
     public ProjectDto toProjectDto() {
         ProjectDto projectDto = new ProjectDto();
-        projectDto.setId(String.valueOf(this.id));
+        projectDto.setId(this.id);
         projectDto.setTitle(this.title);
         projectDto.setTerm(((SeniorProject)this.projectType).getTerm());
         projectDto.setYoutubeLink(this.youtubeLink);
         projectDto.setReportLink(this.reportLink);
         projectDto.setDescription(this.description);
         projectDto.setProfessorIds(this.professors.stream().map(Professor::getId).collect(Collectors.toList()));
-        projectDto.setGroupId(this.group.getId());
-        projectDto.setApplicationIds(this.applications.stream().map(Application::getId).collect(Collectors.toList()));
+        if (this.group != null) {
+            projectDto.setGroupId(this.group.getId().toString());
+        }
+        if(this.applications != null){
+            projectDto.setApplicationIds(this.applications.stream().map(Application::getId).collect(Collectors.toList()));
+        }
         projectDto.setProjectStatus(this.EProjectStatus.toString());
-        projectDto.setKeywords(this.keywords.stream().map(Keyword::getName).collect(Collectors.toList()));
+        if(this.keywords != null){
+            projectDto.setKeywords(this.keywords.stream().map(Keyword::getName).collect(Collectors.toList()));
+
+        }
         projectDto.setProjectType(this.projectType.getName());
         return projectDto;
     }

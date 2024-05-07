@@ -12,6 +12,7 @@ import seniorproject.models.dto.ApplicationDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ApplicationManager implements ApplicationService{
@@ -26,7 +27,7 @@ public class ApplicationManager implements ApplicationService{
 
 
     @Override
-    public DataResult<List<ApplicationDto>> getApplicationsByProfessorId(Long professorId) {
+    public DataResult<List<ApplicationDto>> getApplicationsByProfessorId(UUID professorId) {
         List<Project> projects = projectDao.findAllByProfessorsId(professorId);
         List<ApplicationDto> applications = new ArrayList<>();
 

@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 public class UserDetailsImpl implements UserDetails {
 
     @Getter
-    private Long id;
+    private UUID id;
     private String username;
     private String email;
     @JsonIgnore
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
-    public UserDetailsImpl(Long id, String username, String email, String password,
+    public UserDetailsImpl(UUID id, String username, String email, String password,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;

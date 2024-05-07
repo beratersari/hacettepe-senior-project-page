@@ -9,6 +9,7 @@ import org.springframework.data.domain.Persistable;
 import seniorproject.models.concretes.enums.ERole;
 
 import javax.persistence.*;
+import java.util.UUID;
 
 
 @Entity
@@ -16,19 +17,10 @@ import javax.persistence.*;
 @Table(name = "roles")
 public class Role {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
-    @GenericGenerator(
-            name = "sequence-generator",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "admin_sequence"),
-                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
-            }
-    )
+    @GeneratedValue(generator = "uuid2")
     @JsonProperty("id")
     @Column(name = "id", updatable = false, nullable = false)
-    private Long id;
+    private UUID id;
 
     @Getter
     @Enumerated(EnumType.STRING)

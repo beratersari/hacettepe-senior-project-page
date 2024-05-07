@@ -3,12 +3,13 @@ import seniorproject.models.concretes.enums.Status;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class ApplicationDto {
-    private long id;
-    private String projectId;
-    private long groupId;
+    private UUID id;
+    private UUID projectId;
+    private UUID groupId;
     private Status status;
     private List<String> groupMembers;
     private String projectTitle;

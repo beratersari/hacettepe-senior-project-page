@@ -7,6 +7,8 @@ import seniorproject.dataAccess.abstracts.*;
 import seniorproject.models.concretes.Role;
 import seniorproject.models.concretes.enums.ERole;
 
+import java.util.UUID;
+
 @Service
 public class RoleManager implements RoleService{
 
@@ -17,11 +19,14 @@ public class RoleManager implements RoleService{
         this.roleDao = roleDao;
     }
 
+    public UUID generateId(){
+        return UUID.randomUUID();
+    }
 
     @Override
     public Role createRole() {
         Role role = new Role();
-        role.setId((long) 1);
+        role.setId(generateId());
         role.setName(ERole.ROLE_ADMIN);
         System.out.println(role);
         roleDao.save(role);

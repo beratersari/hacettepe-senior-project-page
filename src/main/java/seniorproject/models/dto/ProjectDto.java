@@ -7,15 +7,15 @@ import java.util.UUID;
 
 @Data
 public class ProjectDto {
-    private String id;
+    private UUID id;
     private String title;
     private String term;
     private String youtubeLink;
     private String reportLink;
     private String description;
-    private List<Long> professorIds;
-    private Long groupId;
-    private List<Long> applicationIds;
+    private List<UUID> professorIds;
+    private String groupId;
+    private List<UUID> applicationIds;
     private String projectStatus;
     private boolean isApplied;
     private boolean myProject;

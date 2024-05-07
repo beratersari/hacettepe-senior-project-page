@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 
 
 @Data
@@ -15,7 +16,7 @@ public class Student extends User {
     @MapsId
     @Id
     @JoinColumn(name = "id")
-    private long id;
+    private UUID id;
 
     @ManyToMany
     @JoinTable(

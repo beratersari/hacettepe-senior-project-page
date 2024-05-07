@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 public class GroupDto {
-    private long id;
+    private String id;
     private String groupName;
     private List<String> groupMembers;
     private List<ApplicationDto> applications;

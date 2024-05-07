@@ -7,8 +7,9 @@ import seniorproject.models.concretes.ProjectType;
 import seniorproject.models.concretes.SeniorProject;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface ProjectTypeDao extends JpaRepository<ProjectType, Long> {
+public interface ProjectTypeDao extends JpaRepository<ProjectType, UUID> {
 
     @Query(value = "SELECT p FROM ProjectType p WHERE p.activeness = 'ACTIVE'")
     List<ProjectType> findByActiveness();
