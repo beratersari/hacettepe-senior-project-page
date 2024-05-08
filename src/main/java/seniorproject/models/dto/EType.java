@@ -6,7 +6,7 @@ import lombok.Getter;
 public enum EType {
     TITLE("title"),
 
-    AUTHOR("authors"),
+    AUTHORS("authors"),
 
     KEYWORDS("keywords");
 

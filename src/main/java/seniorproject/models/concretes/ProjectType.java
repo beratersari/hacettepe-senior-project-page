@@ -5,12 +5,13 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 import seniorproject.models.concretes.enums.EProjectTypeStatus;
+import seniorproject.models.dto.projectTypeRequests.ProjectTypeDto;
 
 import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @Table(name = "project_types")
@@ -37,4 +38,14 @@ public class ProjectType {
     @OneToMany(mappedBy = "projectType")
     @JsonManagedReference
     private List<Project> projects;
+
+    public ProjectTypeDto toProjectTypeDto() {
+        ProjectTypeDto projectTypeDto = new ProjectTypeDto();
+        projectTypeDto.setId(this.id);
+        projectTypeDto.setName(this.name);
+        projectTypeDto.setActiveness(this.activeness.toString());
+        projectTypeDto.setTimelines(this.timelines.stream().map(Timeline::getDeliveryName).collect(Collectors.toList()));
+        return projectTypeDto;
+
+    }
 }

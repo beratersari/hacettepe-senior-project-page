@@ -10,8 +10,7 @@ public class ProjectRequestDto {
     UUID sessionId;
     ProjectSearchDto search;
     ProjectSortDto sort;
-
-    int pageNo;
+    int pageNumber;
     int pageSize;
 
 

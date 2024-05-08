@@ -13,6 +13,7 @@ import java.io.File;
 import java.sql.*;
 import java.text.Normalizer;
 import java.util.*;
+import java.util.Date;
 
 @RestController
 public class ReadJson {
@@ -51,6 +52,11 @@ public class ReadJson {
             preparedStatement.setObject(1, generateGeneralId());
             preparedStatement.setString(2, "ROLE_STUDENT");
             preparedStatement.executeUpdate();
+
+            preparedStatement = connection.prepareStatement("INSERT INTO roles (id, name)  VALUES (?, ?)");
+            preparedStatement.setObject(1, generateGeneralId());
+            preparedStatement.setString(2, "ROLE_USER");
+            preparedStatement.executeUpdate();
             if (jsonNode.isArray()) {
                 Iterator<JsonNode> elements = jsonNode.elements();
                 while (elements.hasNext()) {
@@ -76,6 +82,9 @@ public class ReadJson {
                         SeniorProject seniorProject = new SeniorProject();
                         seniorProject.setTerm(projectTerm);
                         seniorProject.setName("Senior Project" + " - " + projectTerm);
+
+
+
                         if(Objects.equals(projectTerm, "2022-2023")){
                             seniorProject.setActiveness(EProjectTypeStatus.ACTIVE);
                         }
@@ -85,20 +94,67 @@ public class ReadJson {
 
                         if (resultSet.next()) {
                             UUID existingProjectTypeId = resultSet.getObject("id", UUID.class);
+                            List<Timeline> timelines = new ArrayList<>();
+                            preparedStatement = connection.prepareStatement("SELECT * FROM timelines WHERE project_type_id = ?");
+                            preparedStatement.setObject(1, existingProjectTypeId);
+                            ResultSet timelineResultSet = preparedStatement.executeQuery();
+                            while (timelineResultSet.next()) {
+                                Timeline timeline = new Timeline();
+                                timeline.setId(timelineResultSet.getObject("id", UUID.class));
+                                timeline.setDeliveryDate(timelineResultSet.getDate("delivery_date"));
+                                timeline.setDeliveryName(timelineResultSet.getString("delivery_name"));
+                                timeline.setProjectType(seniorProject);
+                                timelines.add(timeline);
+                            }
                             if (existingProjectTypeId != null) {
                                 seniorProject.setId(existingProjectTypeId);
+                                seniorProject.setTimelines(timelines);
+
                             } else {
                                 seniorProject.setId(generateGeneralId());
+                                seniorProject.setTimelines(timelines);
+
                             }
                         }
                         else {
                             seniorProject.setId(generateGeneralId());
+                            List<Timeline> timelines = new ArrayList<>();
+                            Timeline timeline = new Timeline();
+                            timeline.setId(generateGeneralId());
+                            timeline.setDeliveryDate(java.sql.Date.valueOf("2023-10-30"));
+                            timeline.setDeliveryName("Project Proposal");
+                            timeline.setProjectType(seniorProject);
+                            timelines.add(timeline);
+
+                            timeline = new Timeline();
+                            timeline.setId(generateGeneralId());
+                            timeline.setDeliveryDate(java.sql.Date.valueOf("2024-01-06"));
+                            timeline.setDeliveryName("End Of Term Development Report");
+                            timeline.setProjectType(seniorProject);
+                            timelines.add(timeline);
+
+                            timeline = new Timeline();
+                            timeline.setId(generateGeneralId());
+                            timeline.setDeliveryDate(java.sql.Date.valueOf("2024-04-15"));
+                            timeline.setDeliveryName("Term Study Plan");
+                            timeline.setProjectType(seniorProject);
+                            timelines.add(timeline);
+
+                            timeline = new Timeline();
+                            timeline.setId(generateGeneralId());
+                            timeline.setDeliveryDate(java.sql.Date.valueOf("2024-06-30"));
+                            timeline.setDeliveryName("End Of Project");
+                            timeline.setProjectType(seniorProject);
+                            timelines.add(timeline);
+
+                            seniorProject.setTimelines(timelines);
                         }
                         project.setProjectType(seniorProject);
 
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
+
                     project.setYoutubeLink(youtubeLink);
                     project.setReportLink(reportLink);
                     project.setDescription(abstractText);
@@ -124,6 +180,20 @@ public class ReadJson {
                         System.out.println("Senior Projects already exists:" + project.getProjectType().getId());
 
                     }
+
+                   try {
+                       preparedStatement = connection.prepareStatement("INSERT INTO  timelines (id,delivery_date,delivery_name,project_type_id) VALUES (?,?,?,?)");
+                          for (Timeline timeline : ((SeniorProject) project.getProjectType()).getTimelines()) {
+                            preparedStatement.setObject(1, timeline.getId());
+                            preparedStatement.setDate(2, new java.sql.Date(timeline.getDeliveryDate().getTime()));
+                            preparedStatement.setString(3, timeline.getDeliveryName());
+                            preparedStatement.setObject(4, project.getProjectType().getId());
+                            preparedStatement.executeUpdate();
+                          }
+                    } catch (SQLException e) {
+                        System.out.println("Timeline already exists:" + project.getProjectType().getId());
+                   }
+
 
                     Group group = new Group();
                     group.setId(generateGeneralId());
@@ -227,20 +297,32 @@ public class ReadJson {
                         }
                         for (Professor professor : professorList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO users_to_roles (user_id,role_id) VALUES (?,?)");
-                                preparedStatement.setObject(1, professor.getId());
-                                preparedStatement.setLong(2, 2);
-                                preparedStatement.executeUpdate();
+                                preparedStatement = connection.prepareStatement("SELECT id FROM roles WHERE name = ?");
+                                preparedStatement.setString(1, "ROLE_PROFESSOR");
+                                ResultSet resultSet = preparedStatement.executeQuery();
+                                if (resultSet.next()) {
+                                    UUID roleId = resultSet.getObject("id", UUID.class);
+                                    preparedStatement = connection.prepareStatement("INSERT INTO users_to_roles (user_id,role_id) VALUES (?,?)");
+                                    preparedStatement.setObject(1, professor.getId());
+                                    preparedStatement.setObject(2, roleId);
+                                    preparedStatement.executeUpdate();
+                                }
                             } catch (SQLException e) {
                                 System.out.println("Professor Role Aleeady exists:" + professor.getId());
                             }
                         }
                         for (Student student : studentList) {
                             try {
-                                preparedStatement = connection.prepareStatement("INSERT INTO users_to_roles (user_id,role_id) VALUES (?,?)");
-                                preparedStatement.setObject(1, student.getId());
-                                preparedStatement.setLong(2, 3);
-                                preparedStatement.executeUpdate();
+                                preparedStatement = connection.prepareStatement("SELECT id FROM roles WHERE name = ?");
+                                preparedStatement.setString(1, "ROLE_PROFESSOR");
+                                ResultSet resultSet = preparedStatement.executeQuery();
+                                if (resultSet.next()) {
+                                    UUID roleId = resultSet.getObject("id", UUID.class);
+                                    preparedStatement = connection.prepareStatement("INSERT INTO users_to_roles (user_id,role_id) VALUES (?,?)");
+                                    preparedStatement.setObject(1, student.getId());
+                                    preparedStatement.setObject(2, roleId);
+                                    preparedStatement.executeUpdate();
+                                }
                             } catch (SQLException e) {
                                 System.out.println("Student Role Aleeady exists:" + student.getId());
                             }

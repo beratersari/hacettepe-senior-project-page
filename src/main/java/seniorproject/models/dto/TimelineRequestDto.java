@@ -5,9 +5,6 @@ import lombok.Data;
 import java.util.UUID;
 
 @Data
-public class TimelineDto {
-    private UUID id;
-    private String deliveryDate;
-    private String deliveryName;
+public class TimelineRequestDto {
     private UUID projectTypeId;
 }

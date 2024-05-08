@@ -10,13 +10,13 @@ import seniorproject.dataAccess.abstracts.*;
 import seniorproject.models.concretes.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import seniorproject.models.concretes.enums.ERole;
 import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.concretes.enums.EProjectStatus;
 import seniorproject.models.dto.projectRequests.ProjectCreateDto;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 
@@ -27,27 +27,37 @@ public class ProjectManager implements ProjectService {
     private final GroupDao groupDao;
     private final ApplicationDao applicationDao;
     private final ProjectTypeDao projectTypeDao;
+    private final KeywordDao keywordDao;
 
 
     @Autowired
-    public ProjectManager(ProjectDao projectDao, ProfessorDao professorDao, GroupDao groupDao, ApplicationDao applicationDao, ProjectTypeDao projectTypeDao) {
+    public ProjectManager(ProjectDao projectDao, ProfessorDao professorDao, GroupDao groupDao, ApplicationDao applicationDao, ProjectTypeDao projectTypeDao, KeywordDao keywordDao) {
         super();
         this.projectDao = projectDao;
         this.professorDao = professorDao;
         this.groupDao = groupDao;
         this.applicationDao = applicationDao;
         this.projectTypeDao = projectTypeDao;
+        this.keywordDao = keywordDao;
     }
 
     public DataResult<List<ProjectDto>> searchAndSortProjects(EType searchType, String searchTerm, String sortType, Sort.Direction sortDirection, int pageNo, int pageSize,UUID sessionId) {
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(sortDirection, sortType));
+        if(pageNo < 1){
+            return new ErrorDataResult<>("Page number cannot be less than 1");
+        }
+        Pageable pageable;
+       try{
+           pageable = PageRequest.of(pageNo - 1, pageSize, sortDirection, sortType);
+         }catch (IllegalArgumentException e){
+           pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.ASC, "id");
+       }
         Page<Project> projectPage;
         switch (searchType) {
             case TITLE:
                 projectPage = projectDao.findByTitleContainingIgnoreCase(searchTerm, pageable);
                 break;
 
-            case AUTHOR:
+            case AUTHORS:
                 projectPage = projectDao.findByAuthorNameContainingIgnoreCase(searchTerm, pageable);
                 break;
 
@@ -88,20 +98,7 @@ public class ProjectManager implements ProjectService {
         return getListDataResult(pageNo, pageSize, projectPage,activeTerm, sessionId);
     }
 
-    public DataResult<List<ProjectDto>> getProjectByStudentId(UUID studentId) {
-        List<Project> projects = new ArrayList<>();
-        for (Group group : groupDao.findAllByStudentId(studentId)) {
-            projects.addAll(projectDao.findAllByGroupId(group.getId()));
-            System.out.println(projects.size());
-        }
 
-        return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()), "Projects listed.");
-    }
-
-    public DataResult<List<ProjectDto>> getProjectByProfessorId(UUID professorId) {
-        List<Project> projects = projectDao.findAllByProfessorsId(professorId);
-        return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()), "Projects listed.");
-    }
 
     public DataResult<ProjectDto> getProjectByProjectId(UUID projectId) {
         Project project = projectDao.findById(projectId).orElse(null);
@@ -119,8 +116,15 @@ public class ProjectManager implements ProjectService {
         project.setDescription(projectCreateDto.getDescription());
         ProjectType projectType = projectTypeDao.findById(projectCreateDto.getProjectTypeId()).get();
         project.setProjectType(projectType);
-        // keyword oluştur öyle ekle
-        //project.setKeywords(projectCreateDto.getKeywords().stream().map(Keyword::new).collect(Collectors.toList()));
+        if (projectCreateDto.getKeywords() != null) {
+            List<Keyword> keywords = new ArrayList<>();
+            for (String keyword : projectCreateDto.getKeywords()) {
+                Keyword keywordEntity = keywordDao.findByName(keyword)
+                        .orElseGet(() -> keywordDao.save(new Keyword(keyword)));
+                keywords.add(keywordEntity);
+            }
+            project.setKeywords(keywords);
+        }
         project.setEProjectStatus(EProjectStatus.OFFERED);
         List<Professor> professors = new ArrayList<>();
         for (UUID professorId : projectCreateDto.getProfessorIds()) {
@@ -134,6 +138,41 @@ public class ProjectManager implements ProjectService {
         projectType.getProjects().add(project);
 
         return new SuccessDataResult<>(project.toProjectDto(), "Project created.");
+    }
+
+
+    @Override
+    public DataResult<List<ProjectDto>> getMyProjects(UUID sessionId, ERole[] roles) {
+        ERole role = null;
+        for(ERole eRole : roles){
+            if (role == ERole.ROLE_PROFESSOR){
+                break;
+            }
+            else{
+                role = eRole;
+            }
+        }
+        if (role == ERole.ROLE_STUDENT) {
+            return getProjectByStudentId(sessionId);
+        }
+        else if (role == ERole.ROLE_PROFESSOR) {
+            return getProjectByProfessorId(sessionId);
+        }
+        return new ErrorDataResult<>("Not project for this role.");
+    }
+
+    public DataResult<List<ProjectDto>> getProjectByStudentId(UUID studentId) {
+        List<Project> projects = new ArrayList<>();
+        for (Group group : groupDao.findAllByStudentId(studentId)) {
+            projects.addAll(projectDao.findAllByGroupId(group.getId()));
+        }
+
+        return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()), "Projects listed.");
+    }
+
+    public DataResult<List<ProjectDto>> getProjectByProfessorId(UUID professorId) {
+        List<Project> projects = projectDao.findAllByProfessorsId(professorId);
+        return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()), "Projects listed.");
     }
 
     private DataResult<List<ProjectDto>> getListDataResult(int pageNo, int pageSize, Page<Project> projectPage, String term, UUID sessionId) {
@@ -150,9 +189,14 @@ public class ProjectManager implements ProjectService {
                 projectDto.setMyProject(professor.getId() == sessionId || projectDto.isMyProject());
             }
 
-            for (Student student : project.getGroup().getStudents()) {
-                authorNames.add(student.getUsername());
-                projectDto.setMyProject(student.getId() == sessionId || projectDto.isMyProject());
+            if (project.getGroup() == null) {
+                projectDto.setMyProject(projectDto.isMyProject());
+            }
+            else{
+                for (Student student : project.getGroup().getStudents()) {
+                    authorNames.add(student.getUsername());
+                    projectDto.setMyProject(student.getId() == sessionId || projectDto.isMyProject());
+                }
             }
 
             for (Application application : project.getApplications()) {

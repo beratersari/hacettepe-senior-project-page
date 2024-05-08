@@ -17,4 +17,7 @@ public interface ProjectTypeDao extends JpaRepository<ProjectType, UUID> {
     @Query(value = "SELECT p FROM ProjectType p LEFT JOIN SeniorProject sp ON p.id = sp.id WHERE sp.term = :term")
     ProjectType findByTerm(String term);
 
+    @Query(value = "SELECT sp FROM ProjectType p LEFT JOIN SeniorProject sp ON p.id = sp.id WHERE p.activeness = 'ACTIVE'")
+    List<SeniorProject> findActiveProjectType();
+
 }

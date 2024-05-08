@@ -6,14 +6,19 @@ import org.springframework.web.bind.annotation.*;
 import seniorproject.business.abstracts.ProjectService;
 import seniorproject.core.utilities.results.DataResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import seniorproject.models.concretes.enums.ERole;
 import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.dto.projectRequests.ProjectCreateDto;
 import seniorproject.models.dto.projectRequests.ProjectRequestDto;
 import seniorproject.models.dto.projectRequests.ProjectWithTypesRequestDto;
+import seniorproject.models.dto.projectRequests.UserIdProjectRequestDto;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
@@ -32,17 +37,17 @@ public class ProjectsController {
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public DataResult<List<ProjectDto>> getProjects(@RequestBody ProjectRequestDto projectRequestDto) {
         UUID sessionId = projectRequestDto.getSessionId();
-        if (projectRequestDto.getSearch() == null || !projectRequestDto.getSort().getType().equals("title")) {
-            return projectService.searchAndSortProjects(EType.TITLE, "", "id", Sort.Direction.ASC, projectRequestDto.getPageNo(), projectRequestDto.getPageSize(),sessionId);
+        if (projectRequestDto.getSearch().getType() == null || Objects.equals(projectRequestDto.getSearch().getValue(), "")) {
+            String sortDirection = projectRequestDto.getSort().getDirection();
+            return projectService.searchAndSortProjects(EType.TITLE, "", "id", Sort.Direction.fromString(sortDirection), projectRequestDto.getPageNumber(), projectRequestDto.getPageSize(),sessionId);
         }
 
         EType searchType = projectRequestDto.getSearch().getType();
         String searchTerm = projectRequestDto.getSearch().getValue();
         String sortType = projectRequestDto.getSort().getType();
         String sortDirection = projectRequestDto.getSort().getDirection();
-        int pageNumber = projectRequestDto.getPageNo();
+        int pageNumber = projectRequestDto.getPageNumber();
         int pageSize = projectRequestDto.getPageSize();
-
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
         return projectService.searchAndSortProjects(searchType,searchTerm, sortType, direction, pageNumber, pageSize,sessionId);
 
@@ -67,23 +72,20 @@ public class ProjectsController {
         return projectService.searchActiveSeniorProjects(pageNumber, pageSize, sessionId);
     }
 
-    // studentId yerine session id yaz, page number ve page size ekle bunları request body ile sağla
-    @PostMapping("/getProjectByStudentId")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DataResult<List<ProjectDto>> getProjectByStudentId(UUID studentId) {
-        return this.projectService.getProjectByStudentId(studentId);
-    }
-
     @PostMapping("/getProjectByProjectId")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     public DataResult<ProjectDto> getProjectByProjectId(UUID projectId) {
         return this.projectService.getProjectByProjectId(projectId);
     }
 
-    @PostMapping("/getProjectByProfessorId")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
-    public DataResult<List<ProjectDto>> getProjectByProfessorId(UUID professorId) {
-        return this.projectService.getProjectByProfessorId(professorId);
+    @PostMapping("/getMyProjects")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_PROFESSOR')")
+    public DataResult<List<ProjectDto>> getProjectById(@RequestBody UserIdProjectRequestDto userIdProjectRequestDto) {
+        UUID sessionId = userIdProjectRequestDto.getSessionId();
+
+        ERole[] roles = userIdProjectRequestDto.getRoles();
+
+        return this.projectService.getMyProjects(sessionId, roles);
     }
 
     @PostMapping("/createSeniorProjectByProfessor")

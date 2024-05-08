@@ -13,7 +13,6 @@ public class ProjectCreateDto {
     private String term;
     private String description;
     private List<UUID> professorIds;
-    private List<UUID> applicationIds;
     private UUID ProjectTypeId;
     private List<String> keywords = new ArrayList<>();
 }
