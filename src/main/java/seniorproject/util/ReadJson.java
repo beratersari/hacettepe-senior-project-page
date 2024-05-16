@@ -71,10 +71,12 @@ public class ReadJson {
                     String abstractText = projectNode.get("abstract").asText();
                     String[] students = objectMapper.convertValue(projectNode.get("students"), String[].class);
                     String[] supervisors = objectMapper.convertValue(projectNode.get("supervisor"), String[].class);
+                    String[] keywords = objectMapper.convertValue(projectNode.get("keywords"), String[].class);
 
                     Project project = new Project();
                     project.setId(generateGeneralId());
                     project.setTitle(projectName);
+
                     try{
                         preparedStatement = connection.prepareStatement("SELECT id FROM project_types WHERE name = ?");
                         preparedStatement.setString(1, "Senior Project" + " - " + projectTerm);
@@ -155,10 +157,15 @@ public class ReadJson {
                         e.printStackTrace();
                     }
 
+
+
+
                     project.setYoutubeLink(youtubeLink);
                     project.setReportLink(reportLink);
                     project.setDescription(abstractText);
                     project.setEProjectStatus(EProjectStatus.WORKING);
+
+
 
 
                     try{
@@ -338,6 +345,35 @@ public class ReadJson {
                             }
                         }
 
+                        List<Keyword> keywordList = new ArrayList<>();
+                        for( String keyword : keywords){
+                            preparedStatement = connection.prepareStatement("SELECT keyword_id FROM keywords WHERE name = ?");
+                            preparedStatement.setString(1, keyword);
+                            ResultSet resultSet = preparedStatement.executeQuery();
+                            UUID keywordId;
+                            if (resultSet.next()) {
+                                keywordId = resultSet.getObject("keyword_id", UUID.class);
+                                Keyword keywordObject = new Keyword();
+                                keywordObject.setId(keywordId);
+                                keywordObject.setName(keyword);
+                                keywordList.add(keywordObject);
+
+                            } else {
+                                keywordId = generateGeneralId();
+                                preparedStatement = connection.prepareStatement("INSERT INTO keywords (keyword_id, name) VALUES (?, ?)");
+                                preparedStatement.setObject(1, keywordId);
+                                preparedStatement.setString(2, keyword);
+                                preparedStatement.executeUpdate();
+                                Keyword keywordObject = new Keyword();
+                                keywordObject.setId(keywordId);
+                                keywordObject.setName(keyword);
+                                keywordList.add(keywordObject);
+
+                            }
+
+                        }
+
+                        project.setKeywords(keywordList);
 
                         preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, project_type_id, youtube_link, report_link, group_id,eproject_status,description) VALUES (?, ?, ?, ?, ?, ?,?,?)");
                         preparedStatement.setObject(1, project.getId());
@@ -354,6 +390,13 @@ public class ReadJson {
                         for (Professor professor : professorList) {
                             preparedStatement.setObject(1, project.getId());
                             preparedStatement.setObject(2, professor.getId());
+                            preparedStatement.executeUpdate();
+                        }
+
+                        for (Keyword keyword : project.getKeywords()) {
+                            preparedStatement = connection.prepareStatement("INSERT INTO project_keywords (project_id, keyword_id) VALUES (?, ?)");
+                            preparedStatement.setObject(1, project.getId());
+                            preparedStatement.setObject(2, keyword.getId());
                             preparedStatement.executeUpdate();
                         }
 

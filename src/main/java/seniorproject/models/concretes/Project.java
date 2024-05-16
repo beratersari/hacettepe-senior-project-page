@@ -45,6 +45,10 @@ public class Project {
     @Column(columnDefinition="TEXT")
     private String description;
 
+
+    @Column(name = "embedding")
+    private String embedding;
+
     @ManyToMany
     @JoinTable(
             name = "project_professor",
