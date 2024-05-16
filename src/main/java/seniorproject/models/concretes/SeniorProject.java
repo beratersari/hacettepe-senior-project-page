@@ -26,6 +26,8 @@ public class SeniorProject extends ProjectType{
         seniorProjectDto.setTerm(this.getTerm());
         seniorProjectDto.setActiveness(this.getActiveness());
         seniorProjectDto.setTimelines(this.getTimelines().stream().map(Timeline::getDeliveryName).collect(Collectors.toList()));
+        if(this.getProjects() == null)
+            return seniorProjectDto;
         seniorProjectDto.setProjects(this.getProjects().stream().map(Project::toProjectDto).collect(Collectors.toList()));
         return seniorProjectDto;
     }

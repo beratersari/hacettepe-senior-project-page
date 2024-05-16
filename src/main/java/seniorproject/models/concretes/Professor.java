@@ -21,4 +21,6 @@ public class Professor extends User {
 
     @ManyToMany(mappedBy = "professors")
     private List<Project> projects;
+
+
 }

@@ -314,7 +314,7 @@ public class ReadJson {
                         for (Student student : studentList) {
                             try {
                                 preparedStatement = connection.prepareStatement("SELECT id FROM roles WHERE name = ?");
-                                preparedStatement.setString(1, "ROLE_PROFESSOR");
+                                preparedStatement.setString(1, "ROLE_STUDENT");
                                 ResultSet resultSet = preparedStatement.executeQuery();
                                 if (resultSet.next()) {
                                     UUID roleId = resultSet.getObject("id", UUID.class);
@@ -339,7 +339,7 @@ public class ReadJson {
                         }
 
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, project_type_id, youtube_link, report_link, group_id,eproject_status) VALUES (?, ?, ?, ?, ?, ?,?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, project_type_id, youtube_link, report_link, group_id,eproject_status,description) VALUES (?, ?, ?, ?, ?, ?,?,?)");
                         preparedStatement.setObject(1, project.getId());
                         preparedStatement.setString(2, project.getTitle());
                         preparedStatement.setObject(3, project.getProjectType().getId());
@@ -347,6 +347,7 @@ public class ReadJson {
                         preparedStatement.setString(5, project.getReportLink());
                         preparedStatement.setObject(6, group.getId());
                         preparedStatement.setString(7, String.valueOf(project.getEProjectStatus()));
+                        preparedStatement.setString(8, project.getDescription());
                         preparedStatement.executeUpdate();
 
                         preparedStatement = connection.prepareStatement("INSERT INTO project_professor (project_id, user_id) VALUES (?, ?)");

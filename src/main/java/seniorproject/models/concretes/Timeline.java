@@ -30,8 +30,7 @@ public class Timeline {
         TimelineDto timelineDto = new TimelineDto();
         timelineDto.setId(this.id);
         timelineDto.setDeliveryName(this.deliveryName);
-        timelineDto.setDeliveryDate(String.valueOf(this.deliveryDate));
-        timelineDto.setProjectTypeId(this.projectType.getId());
+        timelineDto.setDeliveryDate(this.deliveryDate);
         return timelineDto;
     }
 }

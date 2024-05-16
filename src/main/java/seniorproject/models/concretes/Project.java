@@ -4,13 +4,16 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
-import org.hibernate.annotations.GenericGenerator;
+import seniorproject.models.concretes.enums.EStatus;
+import seniorproject.models.dto.ProfessorInformationDto;
 import seniorproject.models.dto.ProjectDto;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
 
 @Data
 @Entity
@@ -36,6 +39,10 @@ public class Project {
     @Column(name = "report_link")
     private String reportLink;
 
+    @Column(name ="image_url")
+    private String imageUrl;
+
+    @Column(columnDefinition="TEXT")
     private String description;
 
     @ManyToMany
@@ -65,6 +72,7 @@ public class Project {
             inverseJoinColumns = @JoinColumn(name = "keyword_id")
     )
     private List<Keyword> keywords;
+    private Long studentLimit;
 
     public ProjectDto toProjectDto() {
         ProjectDto projectDto = new ProjectDto();
@@ -74,7 +82,6 @@ public class Project {
         projectDto.setYoutubeLink(this.youtubeLink);
         projectDto.setReportLink(this.reportLink);
         projectDto.setDescription(this.description);
-        projectDto.setProfessorIds(this.professors.stream().map(Professor::getId).collect(Collectors.toList()));
         if (this.group != null) {
             projectDto.setGroupId(this.group.getId().toString());
         }
@@ -86,7 +93,58 @@ public class Project {
             projectDto.setKeywords(this.keywords.stream().map(Keyword::getName).collect(Collectors.toList()));
 
         }
+
+        List<String> students = new ArrayList<>();
+
+        if (this.getGroup() == null) {
+            projectDto.setMyProject(projectDto.isMyProject());
+        }
+        else{
+            for (Student student : this.getGroup().getStudents()) {
+                students.add(student.getUsername());
+            }
+        }
+        projectDto.setStudents(students);
+        List<ProfessorInformationDto> professorInformationDtos = new ArrayList<>();
+        for (Professor professor : this.getProfessors()) {
+            ProfessorInformationDto professorInformationDto = new ProfessorInformationDto();
+            professorInformationDto.setId(professor.getId());
+            professorInformationDto.setUsername(professor.getUsername());
+            professorInformationDtos.add(professorInformationDto);
+        }
+        projectDto.setProfessors(professorInformationDtos);
+        projectDto.setStudentLimit(this.studentLimit);
         projectDto.setProjectType(this.projectType.getName());
+        projectDto.setImageUrl(this.imageUrl);
         return projectDto;
     }
+
+    public ProjectDto toProjectDto(UUID sessionId){
+        ProjectDto projectDto = this.toProjectDto();
+
+        for (Professor professor : this.getProfessors()) {
+            if (professor.getId().equals(sessionId)) {
+                projectDto.setMyProject(true);
+            }
+        }
+        if (this.getGroup() == null) {
+            projectDto.setMyProject(projectDto.isMyProject());
+        }
+        else{
+            for (Student student : this.getGroup().getStudents()) {
+                if (student.getId().equals(sessionId)) {
+                    projectDto.setMyProject(true);
+                }
+            }
+        }
+        for (Application application : this.getApplications()) {
+            application.getGroup().getStudents().forEach(student -> {
+                if (student.getId() == sessionId) {
+                    projectDto.setApplied(true);
+                }
+            });
+        }
+        return projectDto;
+    }
+
 }

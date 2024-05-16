@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import seniorproject.business.abstracts.ApplicationService;
 import seniorproject.core.utilities.results.DataResult;
 import seniorproject.models.dto.ApplicationDto;
+import seniorproject.models.dto.ChangeApplicationStatusDto;
+import seniorproject.models.dto.CreateApplicationDto;
+import seniorproject.models.dto.GroupApplicationDto;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,9 +26,21 @@ public class ApplicationsController {
         this.applicationService = applicationService;
     }
 
-    @PostMapping("/getProjectByProfessorId")
+    @PostMapping("/createApplicationByGroupToProject")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public DataResult<ApplicationDto> createApplicationByGroupToProject(@RequestBody CreateApplicationDto createApplicationDto) {
+        return applicationService.createApplicationByGroupToProject(createApplicationDto);
+    }
+
+    @PostMapping("/changeApplicationStatus")
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
-    public DataResult<List<ApplicationDto>> getProjectById(UUID professorId) {
-        return this.applicationService.getApplicationsByProfessorId(professorId);
+    public DataResult<ApplicationDto> changeApplicationStatus(@RequestBody ChangeApplicationStatusDto changeApplicationStatusDto) {
+        return applicationService.changeApplicationStatus(changeApplicationStatusDto);
+    }
+
+    @PostMapping("/getApplicationsByProfessorId")
+    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    public DataResult<List<ApplicationDto>> getApplicationsByProfessorId(@RequestBody UUID professorId) {
+        return applicationService.getApplicationsByProfessorId(professorId);
     }
 }

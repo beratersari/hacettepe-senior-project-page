@@ -12,9 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import seniorproject.models.concretes.enums.ERole;
 import seniorproject.models.dto.EType;
+import seniorproject.models.dto.ProfessorInformationDto;
 import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.concretes.enums.EProjectStatus;
+import seniorproject.models.dto.StudentInformationDto;
 import seniorproject.models.dto.projectRequests.ProjectCreateDto;
+import seniorproject.models.dto.projectRequests.ProjectDeleteDto;
+import seniorproject.models.dto.projectRequests.ProjectUpdateDto;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -95,6 +99,7 @@ public class ProjectManager implements ProjectService {
             activeTerm = activeSeniorProjects.get(activeProjectTypes.size()-1).getTerm();
         }
         Page<Project> projectPage = projectDao.findByProjectTypeContainingIgnoreCase( activeTerm, pageable);
+
         return getListDataResult(pageNo, pageSize, projectPage,activeTerm, sessionId);
     }
 
@@ -127,15 +132,22 @@ public class ProjectManager implements ProjectService {
         }
         project.setEProjectStatus(EProjectStatus.OFFERED);
         List<Professor> professors = new ArrayList<>();
-        for (UUID professorId : projectCreateDto.getProfessorIds()) {
-            professorDao.findById(professorId).ifPresent(professors::add);
+        if (projectCreateDto.getProfessors() != null) {
+            for (ProfessorInformationDto professor : projectCreateDto.getProfessors()) {
+                professorDao.findById(professor.getId()).ifPresent(professors::add);
+            }
         }
         Professor professor = professorDao.findById(projectCreateDto.getSessionId()).orElse(null);
-        professors.add(professor);
+        if(!professors.contains(professor)){
+            professors.add(professor);
+        }
         project.setProfessors(professors);
+        project.setStudentLimit(projectCreateDto.getStudentLimit());
+
         projectDao.save(project);
 
         projectType.getProjects().add(project);
+
 
         return new SuccessDataResult<>(project.toProjectDto(), "Project created.");
     }
@@ -161,6 +173,62 @@ public class ProjectManager implements ProjectService {
         return new ErrorDataResult<>("Not project for this role.");
     }
 
+    @Override
+    public DataResult<ProjectDto> updateSeniorProjectByProfessor(ProjectUpdateDto projectUpdateDto) {
+        Project project = projectDao.findById(projectUpdateDto.getId()).orElse(null);
+        if (project == null) {
+            return new ErrorDataResult<>("Project not found.");
+        }
+        project.setTitle(projectUpdateDto.getTitle());
+        project.setDescription(projectUpdateDto.getDescription());
+
+        if (projectUpdateDto.getKeywords() != null) {
+            List<Keyword> keywords = new ArrayList<>();
+            for (String keyword : projectUpdateDto.getKeywords()) {
+                Keyword keywordEntity = keywordDao.findByName(keyword)
+                        .orElseGet(() -> keywordDao.save(new Keyword(keyword)));
+                keywords.add(keywordEntity);
+            }
+            project.setKeywords(keywords);
+        }
+        else{
+            project.setKeywords(null);
+        }
+        List<Professor> professors = new ArrayList<>();
+        for (ProfessorInformationDto professor : projectUpdateDto.getProfessors()) {
+            professorDao.findById(professor.getId()).ifPresent(professors::add);
+        }
+        Professor professor = professorDao.findById(projectUpdateDto.getSessionId()).orElse(null);
+        if(!professors.contains(professor)){
+            professors.add(professor);
+        }
+        project.setProfessors(professors);
+        if(projectUpdateDto.getGroupId() == null){
+            project.setGroup(null);
+        }
+        else {
+            Group group = groupDao.findById(projectUpdateDto.getGroupId()).orElse(null);
+            project.setGroup(group);
+        }
+        project.setStudentLimit(projectUpdateDto.getStudentLimit());
+        projectDao.save(project);
+
+        //projectType.getProjects().add(project);
+
+        return new SuccessDataResult<>(project.toProjectDto(), "Project updated.");
+    }
+
+    @Override
+    public DataResult<ProjectDto> deleteSeniorProjectByProfessor(ProjectDeleteDto projectDeleteDto) {
+        Project project = projectDao.findById(projectDeleteDto.getProjectId()).orElse(null);
+        if (project == null) {
+            return new ErrorDataResult<>("Project not found.");
+        }
+        projectDao.delete(project);
+
+        return new SuccessDataResult<>("Project deleted.");
+    }
+
     public DataResult<List<ProjectDto>> getProjectByStudentId(UUID studentId) {
         List<Project> projects = new ArrayList<>();
         for (Group group : groupDao.findAllByStudentId(studentId)) {
@@ -182,10 +250,13 @@ public class ProjectManager implements ProjectService {
 
         for (Project project : projects) {
             ProjectDto projectDto = project.toProjectDto();
-            List<String> authorNames = new ArrayList<>();
+            List<String> students = new ArrayList<>();
+            List<String> professors = new ArrayList<>();
+            boolean applied = false;
 
             for (Professor professor : project.getProfessors()) {
-                authorNames.add(professor.getUsername());
+                professors.add(professor.getUsername());
+                System.out.println("professors: " +professor.getUsername());
                 projectDto.setMyProject(professor.getId() == sessionId || projectDto.isMyProject());
             }
 
@@ -194,22 +265,37 @@ public class ProjectManager implements ProjectService {
             }
             else{
                 for (Student student : project.getGroup().getStudents()) {
-                    authorNames.add(student.getUsername());
+                    students.add(student.getUsername());
+                    System.out.println("students: " +student.getUsername());
                     projectDto.setMyProject(student.getId() == sessionId || projectDto.isMyProject());
                 }
             }
 
             for (Application application : project.getApplications()) {
-                application.getGroup().getStudents().forEach(student -> {
-                    if (student.getId() == sessionId) {
-                        projectDto.setApplied(true);
+                for(StudentInformationDto studentInformationDto : application.toApplicationDto().getGroupMembers()){
+                    if(studentInformationDto.getId().equals(sessionId)){
+                        applied = true;
+                        System.out.println("applied: " + applied);
+
+                        break;
                     }
-                });
+                }
             }
-            projectDto.setAuthorNames(authorNames);
+            projectDto.setStudents(students);
+            List<ProfessorInformationDto> professorInformationDtos = new ArrayList<>();
+            for (Professor professor : project.getProfessors()) {
+                ProfessorInformationDto professorInformationDto = new ProfessorInformationDto();
+                professorInformationDto.setId(professor.getId());
+                professorInformationDto.setUsername(professor.getUsername());
+                professorInformationDtos.add(professorInformationDto);
+            }
+            projectDto.setProfessors(professorInformationDtos);
+            projectDto.setApplied(applied);
             projectDtos.add(projectDto);
         }
         long totalProjects = projectPage.getTotalElements();
+
+
         if (term == null) {
             return new SuccessDataResult<>(projectDtos, pageSize, totalProjects, projectPage.getTotalPages(), pageNo, null);
         }

@@ -4,13 +4,10 @@ import lombok.Data;
 import seniorproject.models.dto.TimelineDto;
 
 import java.util.List;
-import java.util.UUID;
 
 @Data
-public class ProjectTypeDto {
-    private UUID id;
+public class CreateSeniorProjectTermDto {
     private String name;
-    private String activeness;
+    private String term;
     private List<TimelineDto> timelines;
 }
-

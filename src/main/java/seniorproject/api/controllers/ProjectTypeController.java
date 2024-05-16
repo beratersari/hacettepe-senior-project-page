@@ -24,26 +24,48 @@ public class ProjectTypeController {
 
 
     @PostMapping("/getProjectTypes")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public DataResult<List<ProjectTypeDto>> getProjectTypes() {
         return projectTypeService.getProjectTypes();
     }
 
     @PostMapping("/createProjectType")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public DataResult<ProjectTypeDto> createProjectType(@RequestBody CreateProjectTypeDto projectTypeDto) {
+        System.out.println(projectTypeDto);
         return projectTypeService.createProjectType(projectTypeDto);
     }
 
     @PostMapping("/getActiveSeniorProjectTerm")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')")
     public DataResult<ActiveSeniorProjectResponseDto> getActiveSeniorProjectTerm() {
         return projectTypeService.getActiveSeniorProjectTerm();
     }
 
-//    @PostMapping("/setStartDateOfActiveness")
-//    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
-//    public DataResult<ProjectTypeDto> setStartDateOfActiveness(@RequestBody StartDateOfActivenessDto startDateOfActivenessDto) {
-//        return projectTypeService.setStartDateOfActiveness(startDateOfActivenessDto);
-//    }
+    @PostMapping("/activateSeniorProjectTerm")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')")
+    public DataResult<SeniorProjectDto> activateSeniorProjectTerm(@RequestBody ActivateSeniorProjectRequest activateSeniorProjectRequest) {
+        return projectTypeService.activateSeniorProjectTerm(activateSeniorProjectRequest);
+    }
+
+
+    @PostMapping("/archiveSeniorProjectTerm")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public DataResult<SeniorProjectDto> archiveSeniorProjectTerm(@RequestBody ArchiveSeniorProjectRequest archiveSeniorProjectRequest) {
+        return projectTypeService.archiveSeniorProjectTerm(archiveSeniorProjectRequest);
+    }
+
+    @PostMapping("/createSeniorProjectTerm")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public DataResult<SeniorProjectDto> createSeniorProjectTerm(@RequestBody CreateSeniorProjectTermDto createSeniorProjectRequest) {
+        return projectTypeService.createSeniorProjectTerm(createSeniorProjectRequest);
+    }
+
+    @PostMapping("/editSeniorProjectTerm")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public DataResult<SeniorProjectDto> editSeniorProjectTerm(@RequestBody EditSeniorProjectTermDto editSeniorProjectRequest) {
+        return projectTypeService.editSeniorProjectTerm(editSeniorProjectRequest);
+    }
+
+    // ADD DELETE API IN NEXT
 }

@@ -12,5 +12,11 @@ public interface ProjectTypeService {
 
     DataResult<ActiveSeniorProjectResponseDto> getActiveSeniorProjectTerm();
 
-    //DataResult<ProjectTypeDto> setStartDateOfActiveness(StartDateOfActivenessDto startDateOfActivenessDto);
+    DataResult<SeniorProjectDto> activateSeniorProjectTerm(ActivateSeniorProjectRequest activateSeniorProjectRequest);
+
+    DataResult<SeniorProjectDto> archiveSeniorProjectTerm(ArchiveSeniorProjectRequest archiveSeniorProjectRequest);
+
+    DataResult<SeniorProjectDto> createSeniorProjectTerm(CreateSeniorProjectTermDto createSeniorProjectRequest);
+
+    DataResult<SeniorProjectDto> editSeniorProjectTerm(EditSeniorProjectTermDto editSeniorProjectRequest);
 }

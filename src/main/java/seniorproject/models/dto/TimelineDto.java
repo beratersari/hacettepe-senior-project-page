@@ -2,12 +2,12 @@ package seniorproject.models.dto;
 
 import lombok.Data;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Data
 public class TimelineDto {
     private UUID id;
-    private String deliveryDate;
+    private Date deliveryDate;
     private String deliveryName;
-    private UUID projectTypeId;
 }

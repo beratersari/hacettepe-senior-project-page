@@ -7,10 +7,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class ProjectTypeDto {
+public class EditSeniorProjectTermDto {
     private UUID id;
     private String name;
-    private String activeness;
+    private String term;
     private List<TimelineDto> timelines;
 }
-

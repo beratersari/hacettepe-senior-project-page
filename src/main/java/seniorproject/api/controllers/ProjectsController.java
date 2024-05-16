@@ -9,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import seniorproject.models.concretes.enums.ERole;
 import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
-import seniorproject.models.dto.projectRequests.ProjectCreateDto;
-import seniorproject.models.dto.projectRequests.ProjectRequestDto;
-import seniorproject.models.dto.projectRequests.ProjectWithTypesRequestDto;
-import seniorproject.models.dto.projectRequests.UserIdProjectRequestDto;
+import seniorproject.models.dto.projectRequests.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,7 +31,6 @@ public class ProjectsController {
     }
 
     @PostMapping("/getProjects")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public DataResult<List<ProjectDto>> getProjects(@RequestBody ProjectRequestDto projectRequestDto) {
         UUID sessionId = projectRequestDto.getSessionId();
         if (projectRequestDto.getSearch().getType() == null || Objects.equals(projectRequestDto.getSearch().getValue(), "")) {
@@ -54,7 +50,6 @@ public class ProjectsController {
     }
 
     @PostMapping("/searchSeniorProjectWithTerm")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public DataResult<List<ProjectDto>> searchSeniorProjectWithTerm(@RequestBody ProjectWithTypesRequestDto projectWithTypesRequest) {
         String searchTerm = projectWithTypesRequest.getSearchTerm();
         int pageNumber = projectWithTypesRequest.getPageNumber();
@@ -64,7 +59,7 @@ public class ProjectsController {
     }
 
     @PostMapping("/getActiveSeniorProjects")
-    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_PROFESSOR')")
     public DataResult<List<ProjectDto>> getActiveSeniorProjects(@RequestBody ProjectWithTypesRequestDto projectWithTypesRequest) {
         int pageNumber = projectWithTypesRequest.getPageNumber();
         int pageSize = projectWithTypesRequest.getPageSize();
@@ -80,7 +75,7 @@ public class ProjectsController {
 
     @PostMapping("/getMyProjects")
     @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_PROFESSOR')")
-    public DataResult<List<ProjectDto>> getProjectById(@RequestBody UserIdProjectRequestDto userIdProjectRequestDto) {
+    public DataResult<List<ProjectDto>> getMyProjects(@RequestBody UserIdProjectRequestDto userIdProjectRequestDto) {
         UUID sessionId = userIdProjectRequestDto.getSessionId();
 
         ERole[] roles = userIdProjectRequestDto.getRoles();
@@ -92,6 +87,18 @@ public class ProjectsController {
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public DataResult<ProjectDto> createSeniorProjectByProfessor(@RequestBody ProjectCreateDto projectCreateDto) {
         return this.projectService.createSeniorProjectByProfessor(projectCreateDto);
+    }
+
+    @PostMapping("/updateSeniorProjectByProfessor")
+    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    public DataResult<ProjectDto> updateSeniorProjectByProfessor(@RequestBody ProjectUpdateDto projectUpdateDto) {
+        return this.projectService.updateSeniorProjectByProfessor(projectUpdateDto);
+    }
+
+    @PostMapping("/deleteSeniorProjectByProfessor")
+    @PreAuthorize("hasRole('ROLE_PROFESSOR')")
+    public DataResult<ProjectDto> deleteSeniorProjectByProfessor(@RequestBody ProjectDeleteDto projectDeleteDto) {
+        return this.projectService.deleteSeniorProjectByProfessor(projectDeleteDto);
     }
 
 }

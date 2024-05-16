@@ -6,6 +6,8 @@ import seniorproject.models.concretes.enums.ERole;
 import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.dto.projectRequests.ProjectCreateDto;
+import seniorproject.models.dto.projectRequests.ProjectDeleteDto;
+import seniorproject.models.dto.projectRequests.ProjectUpdateDto;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,4 +20,8 @@ public interface ProjectService {
     DataResult<ProjectDto> getProjectByProjectId(UUID projectId);
     DataResult<ProjectDto> createSeniorProjectByProfessor(ProjectCreateDto projectCreateDto);
     DataResult<List<ProjectDto>> getMyProjects(UUID sessionId, ERole[] role);
+
+    DataResult<ProjectDto> updateSeniorProjectByProfessor(ProjectUpdateDto projectUpdateDto);
+
+    DataResult<ProjectDto> deleteSeniorProjectByProfessor(ProjectDeleteDto projectDeleteDto);
 }

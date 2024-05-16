@@ -1,6 +1,7 @@
 package seniorproject.models.dto.projectTypeRequests;
 
 import lombok.Data;
+import seniorproject.models.dto.TimelineDto;
 
 import java.util.List;
 
@@ -8,6 +9,5 @@ import java.util.List;
 public class CreateProjectTypeDto {
     private String name;
     private String activeness;
-    private List<String> timelines;
-
+    private List<TimelineDto> timelines;
 }

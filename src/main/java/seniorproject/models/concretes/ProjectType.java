@@ -44,7 +44,7 @@ public class ProjectType {
         projectTypeDto.setId(this.id);
         projectTypeDto.setName(this.name);
         projectTypeDto.setActiveness(this.activeness.toString());
-        projectTypeDto.setTimelines(this.timelines.stream().map(Timeline::getDeliveryName).collect(Collectors.toList()));
+        projectTypeDto.setTimelines(this.timelines.stream().map(Timeline::toTimelineDto).collect(Collectors.toList()));
         return projectTypeDto;
 
     }
