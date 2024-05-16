@@ -1,15 +1,17 @@
 package seniorproject.models.dto;
-import seniorproject.models.concretes.enums.Status;
+import seniorproject.models.concretes.enums.EStatus;
 import lombok.Data;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
 public class ApplicationDto {
-    private long id;
-    private String projectId;
-    private long groupId;
-    private Status status;
-    private List<String> groupMembers;
-    private String projectTitle;
+    private UUID id;
+    private ProjectDto project;
+    private UUID groupId;
+    private EStatus status;
+    private List<StudentInformationDto> groupMembers;
+    private String groupName;
+
 }

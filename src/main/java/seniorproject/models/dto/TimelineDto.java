@@ -1,9 +1,13 @@
 package seniorproject.models.dto;
 
-public class TimelineDto {
-    private long id;
-    private String deliveryDate;
-    private String deliveryName;
-    private String projectTypeId;
+import lombok.Data;
 
+import java.util.Date;
+import java.util.UUID;
+
+@Data
+public class TimelineDto {
+    private UUID id;
+    private Date deliveryDate;
+    private String deliveryName;
 }

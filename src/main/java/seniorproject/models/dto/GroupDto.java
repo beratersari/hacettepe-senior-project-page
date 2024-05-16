@@ -1,13 +1,14 @@
 package seniorproject.models.dto;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.Data;
 
 @Data
 public class GroupDto {
-    private long id;
+    private UUID id;
     private String groupName;
-    private List<String> groupMembers;
+    private List<StudentInformationDto> groupMembers;
     private List<ApplicationDto> applications;
-    private List<String> projectIds;
+    private List<ProjectDto> projects;
 }

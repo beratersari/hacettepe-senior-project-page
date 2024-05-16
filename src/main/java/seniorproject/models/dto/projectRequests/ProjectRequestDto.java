@@ -2,14 +2,15 @@ package seniorproject.models.dto.projectRequests;
 
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class ProjectRequestDto {
 
-    Long sessionId;
+    UUID sessionId;
     ProjectSearchDto search;
     ProjectSortDto sort;
-
-    int pageNo;
+    int pageNumber;
     int pageSize;
 
 

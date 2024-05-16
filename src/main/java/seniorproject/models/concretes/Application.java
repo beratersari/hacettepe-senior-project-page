@@ -1,10 +1,13 @@
 package seniorproject.models.concretes;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
-import seniorproject.models.concretes.enums.Status;
+import seniorproject.models.concretes.enums.EStatus;
 import seniorproject.models.dto.ApplicationDto;
+import seniorproject.models.dto.StudentInformationDto;
 
 import javax.persistence.*;
+import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Data
@@ -12,40 +15,37 @@ import java.util.stream.Collectors;
 @Table(name = "applications")
 public class Application {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
-    @GenericGenerator(
-            name = "sequence-generator",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "admin_sequence"),
-                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
-            }
-    )
+    @GeneratedValue(generator = "uuid2")
     @Column(name = "application_id")
-    private long id;
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id")
     private Group group;
 
     @Enumerated(EnumType.STRING)
-    private Status status;
+    private EStatus status;
 
     public ApplicationDto toApplicationDto() {
         ApplicationDto applicationDto = new ApplicationDto();
         applicationDto.setId(this.id);
-        applicationDto.setProjectId(String.valueOf(this.project.getId()));
-        applicationDto.setProjectTitle(this.project.getTitle());
+        applicationDto.setProject(this.project.toProjectDto());
         applicationDto.setGroupId(this.group.getId());
         applicationDto.setStatus(this.status);
-        if (this.group.getStudents() != null) {
-            applicationDto.setGroupMembers(this.group.getStudents().stream().map(Student::getUsername).collect(Collectors.toList()));
-        }
+        List<StudentInformationDto> groupMembers = this.group.getStudents().stream()
+                .map(student -> {
+                    StudentInformationDto studentInformationDto = new StudentInformationDto();
+                    studentInformationDto.setId(student.getId());
+                    studentInformationDto.setUsername(student.getUsername());
+                    return studentInformationDto;
+                })
+                .collect(Collectors.toList());
+        applicationDto.setGroupMembers(groupMembers);
+        applicationDto.setGroupName(this.group.getName());
         return applicationDto;
     }
 }

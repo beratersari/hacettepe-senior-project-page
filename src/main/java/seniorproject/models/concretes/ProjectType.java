@@ -5,11 +5,13 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.GenericGenerator;
 import seniorproject.models.concretes.enums.EProjectTypeStatus;
+import seniorproject.models.dto.projectTypeRequests.ProjectTypeDto;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Data
 @Table(name = "project_types")
@@ -20,18 +22,9 @@ import java.util.List;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "groups"})
 public class ProjectType {
     @Id
-    @GeneratedValue(generator = "sequence-generator")
-    @GenericGenerator(
-            name = "sequence-generator",
-            strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-            parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "admin_sequence"),
-                    @org.hibernate.annotations.Parameter(name = "initial_value", value = "1"),
-                    @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
-            }
-    )
+    @GeneratedValue(generator = "uuid2")
     @JoinColumn(name = "id")
-    private Long id;
+    private UUID id;
 
     private String name;
 
@@ -45,4 +38,14 @@ public class ProjectType {
     @OneToMany(mappedBy = "projectType")
     @JsonManagedReference
     private List<Project> projects;
+
+    public ProjectTypeDto toProjectTypeDto() {
+        ProjectTypeDto projectTypeDto = new ProjectTypeDto();
+        projectTypeDto.setId(this.id);
+        projectTypeDto.setName(this.name);
+        projectTypeDto.setActiveness(this.activeness.toString());
+        projectTypeDto.setTimelines(this.timelines.stream().map(Timeline::toTimelineDto).collect(Collectors.toList()));
+        return projectTypeDto;
+
+    }
 }

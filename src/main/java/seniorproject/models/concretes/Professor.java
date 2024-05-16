@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -16,8 +17,10 @@ public class Professor extends User {
     @MapsId
     @Id
     @JoinColumn(name = "id")
-    private long id;
+    private UUID id;
 
     @ManyToMany(mappedBy = "professors")
     private List<Project> projects;
+
+
 }

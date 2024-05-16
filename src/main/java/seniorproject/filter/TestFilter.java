@@ -15,6 +15,7 @@ public class TestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String tokenHeader = request.getHeader("Authorization");
         System.out.println("tokenHeader = " + tokenHeader);
+        System.out.println(request.getAuthType());
         filterChain.doFilter(request, response);
     }
 }
