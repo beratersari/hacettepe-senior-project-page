@@ -73,6 +73,8 @@ public class SecurityConfiguration {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/api/projects/getProjects").permitAll()
+                .antMatchers("/api/projects/addEmbedding").permitAll()
+                .antMatchers("/api/projects/getProjectsWithIds").permitAll()
                 .antMatchers("/api/test/**").permitAll()
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated();

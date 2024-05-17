@@ -3,6 +3,7 @@ package seniorproject.business.abstracts;
 import org.springframework.data.domain.Sort;
 import seniorproject.core.utilities.results.DataResult;
 import seniorproject.models.concretes.enums.ERole;
+import seniorproject.models.dto.AddEmbeddingDto;
 import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.dto.projectRequests.ProjectCreateDto;
@@ -24,4 +25,8 @@ public interface ProjectService {
     DataResult<ProjectDto> updateSeniorProjectByProfessor(ProjectUpdateDto projectUpdateDto);
 
     DataResult<ProjectDto> deleteSeniorProjectByProfessor(ProjectDeleteDto projectDeleteDto);
+
+    DataResult<ProjectDto> addEmbedding(AddEmbeddingDto embedding);
+
+    DataResult<List<ProjectDto>> getProjectsByProjectIds(List<UUID> projectIds);
 }
