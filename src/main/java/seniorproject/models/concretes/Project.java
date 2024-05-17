@@ -46,7 +46,7 @@ public class Project {
     private String description;
 
 
-    @Column(name = "embedding")
+    @Column(name = "embedding",columnDefinition="TEXT")
     private String embedding;
 
     @ManyToMany
@@ -148,6 +148,7 @@ public class Project {
                 }
             });
         }
+        projectDto.setEmbedding(this.getEmbedding());
         return projectDto;
     }
 

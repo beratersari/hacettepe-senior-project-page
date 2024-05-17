@@ -11,11 +11,8 @@ import seniorproject.models.concretes.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import seniorproject.models.concretes.enums.ERole;
-import seniorproject.models.dto.EType;
-import seniorproject.models.dto.ProfessorInformationDto;
-import seniorproject.models.dto.ProjectDto;
+import seniorproject.models.dto.*;
 import seniorproject.models.concretes.enums.EProjectStatus;
-import seniorproject.models.dto.StudentInformationDto;
 import seniorproject.models.dto.projectRequests.ProjectCreateDto;
 import seniorproject.models.dto.projectRequests.ProjectDeleteDto;
 import seniorproject.models.dto.projectRequests.ProjectUpdateDto;
@@ -227,6 +224,29 @@ public class ProjectManager implements ProjectService {
         projectDao.delete(project);
 
         return new SuccessDataResult<>("Project deleted.");
+    }
+
+    @Override
+    public DataResult<ProjectDto> addEmbedding(AddEmbeddingDto embeddingDto) {
+        Project project = projectDao.findById(embeddingDto.getProjectId()).orElse(null);
+        if (project == null) {
+            return new ErrorDataResult<>("Project not found.");
+        }
+
+        project.setEmbedding(embeddingDto.getEmbedding());
+        projectDao.save(project);
+
+        return new SuccessDataResult<>(project.toProjectDto(), "Embedding added.");
+    }
+
+    @Override
+    public DataResult<List<ProjectDto>> getProjectsByProjectIds(List<UUID> projectIds) {
+        List<Project> projects = projectDao.findAllByProjectIds(projectIds);
+        if (projects == null) {
+            return new ErrorDataResult<>("Projects not found.");
+        }
+        return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()),  "Project listed.");
+
     }
 
     public DataResult<List<ProjectDto>> getProjectByStudentId(UUID studentId) {

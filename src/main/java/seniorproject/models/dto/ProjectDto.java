@@ -25,5 +25,6 @@ public class ProjectDto {
     private List<String> keywords = new ArrayList<>();
     private Long studentLimit;
     private String imageUrl;
+    private String embedding;
 
 }

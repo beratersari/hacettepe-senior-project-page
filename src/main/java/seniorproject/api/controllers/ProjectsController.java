@@ -7,6 +7,7 @@ import seniorproject.business.abstracts.ProjectService;
 import seniorproject.core.utilities.results.DataResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import seniorproject.models.concretes.enums.ERole;
+import seniorproject.models.dto.AddEmbeddingDto;
 import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.dto.projectRequests.*;
@@ -99,6 +100,18 @@ public class ProjectsController {
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public DataResult<ProjectDto> deleteSeniorProjectByProfessor(@RequestBody ProjectDeleteDto projectDeleteDto) {
         return this.projectService.deleteSeniorProjectByProfessor(projectDeleteDto);
+    }
+
+    @PostMapping("/addEmbedding")
+    public DataResult<ProjectDto> addEmbedding(@RequestBody AddEmbeddingDto embedding){
+        System.out.println("embedding" + embedding.getEmbedding());
+        return this.projectService.addEmbedding(embedding);
+    }
+
+    @PostMapping("/getProjectsWithIds")
+    public DataResult<List<ProjectDto>> getProjectsByProjectIdS(@RequestBody ProjectIdsDto projectIds) {
+        System.out.println(projectIds);
+        return this.projectService.getProjectsByProjectIds(projectIds.getProjectIds());
     }
 
 }

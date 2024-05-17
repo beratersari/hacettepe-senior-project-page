@@ -32,7 +32,7 @@ public class ReadJson {
         try {
             File jsonFile = new File(filePath);
             ObjectMapper objectMapper = new ObjectMapper();
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
 
             JsonNode jsonNode = objectMapper.readTree(jsonFile);
 
@@ -61,7 +61,7 @@ public class ReadJson {
                 Iterator<JsonNode> elements = jsonNode.elements();
                 while (elements.hasNext()) {
                     JsonNode projectNode = elements.next();
-                    connection = DriverManager.getConnection("jdbc:postgresql://localhost:5433/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
+                    connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/HacettepeSeniorProjectPage_Dummy", "postgres", "123");
 
 
                     String projectName = projectNode.get("project_name").asText();

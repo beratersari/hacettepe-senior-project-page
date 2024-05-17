@@ -34,5 +34,7 @@ public interface ProjectDao extends JpaRepository<Project, UUID>{
 
     List<Project> findAllByProfessorsId(UUID professor_id);
 
+    @Query(value = "SELECT p FROM Project p WHERE p.id in :projectIds ")
+    List<Project> findAllByProjectIds(@Param("projectIds") List<UUID> projectIds);
 
 }
