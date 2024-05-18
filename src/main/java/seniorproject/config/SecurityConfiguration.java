@@ -75,6 +75,7 @@ public class SecurityConfiguration {
                 .antMatchers("/api/projects/getProjects").permitAll()
                 .antMatchers("/api/projects/addEmbedding").permitAll()
                 .antMatchers("/api/projects/getProjectsWithIds").permitAll()
+                .antMatchers("/api/announcements/getAnnouncements").permitAll()
                 .antMatchers("/api/test/**").permitAll()
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated();

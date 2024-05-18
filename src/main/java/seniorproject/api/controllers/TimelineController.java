@@ -25,7 +25,7 @@ public class TimelineController {
     }
 
     @PostMapping("/getTimelinesByProjectTypeId")
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_PROFESSOR', 'ROLE_ADMIN')")
     public DataResult<List<TimelineDto>> getTimelinesByProjectTypeId(@RequestBody TimelineRequestDto timelineRequestDto) {
         System.out.println(timelineRequestDto.getProjectTypeId());
         return timelineService.getByProjectTypeId(timelineRequestDto.getProjectTypeId());
