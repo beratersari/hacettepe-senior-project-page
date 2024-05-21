@@ -108,9 +108,10 @@ public class GroupManager implements GroupService {
 
             List<Student> previousStudents = group.get().getStudents();
 
-            if (studentGroupUpdateRequestDto.getStudents() != null) {
-                for (StudentInformationDto studentInformationDto : studentGroupUpdateRequestDto.getStudents()) {
+            if (studentGroupUpdateRequestDto.getGroupMembers() != null) {
+                for (StudentInformationDto studentInformationDto : studentGroupUpdateRequestDto.getGroupMembers()) {
                     studentDao.findById(studentInformationDto.getId()).ifPresent(newStudents::add);
+                    System.out.println("Student id: " + studentInformationDto.getId());
                 }
             }
 

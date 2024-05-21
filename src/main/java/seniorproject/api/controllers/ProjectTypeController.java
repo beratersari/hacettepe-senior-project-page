@@ -32,12 +32,10 @@ public class ProjectTypeController {
     @PostMapping("/createProjectType")
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     public DataResult<ProjectTypeDto> createProjectType(@RequestBody CreateProjectTypeDto projectTypeDto) {
-        System.out.println(projectTypeDto);
         return projectTypeService.createProjectType(projectTypeDto);
     }
 
     @PostMapping("/getActiveSeniorProjectTerm")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')")
     public DataResult<ActiveSeniorProjectResponseDto> getActiveSeniorProjectTerm() {
         return projectTypeService.getActiveSeniorProjectTerm();
     }

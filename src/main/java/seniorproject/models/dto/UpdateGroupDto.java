@@ -10,7 +10,7 @@ public class UpdateGroupDto {
     private UUID GroupId;
     private UUID sessionId;
     private String groupName;
-    private List<StudentInformationDto> students;
+    private List<StudentInformationDto> groupMembers;
 
 
 }
