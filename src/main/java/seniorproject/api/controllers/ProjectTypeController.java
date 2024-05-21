@@ -36,7 +36,6 @@ public class ProjectTypeController {
     }
 
     @PostMapping("/getActiveSeniorProjectTerm")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')")
     public DataResult<ActiveSeniorProjectResponseDto> getActiveSeniorProjectTerm() {
         return projectTypeService.getActiveSeniorProjectTerm();
     }

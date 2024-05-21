@@ -24,7 +24,7 @@ public class ProjectDto {
     private List<ProfessorInformationDto> professors = new ArrayList<>();
     private List<String> keywords = new ArrayList<>();
     private Long studentLimit;
-    private String imageUrl;
+    private String poster;
     private String embedding;
 
 }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
-import seniorproject.models.concretes.enums.EStatus;
 import seniorproject.models.dto.ProfessorInformationDto;
 import seniorproject.models.dto.ProjectDto;
 
@@ -36,11 +35,8 @@ public class Project {
     @Column(name = "youtube_link")
     private String youtubeLink;
 
-    @Column(name = "report_link")
-    private String reportLink;
-
-    @Column(name ="image_url")
-    private String imageUrl;
+    @Column(name ="poster")
+    private String poster;
 
     @Column(columnDefinition="TEXT")
     private String description;
@@ -78,13 +74,16 @@ public class Project {
     private List<Keyword> keywords;
     private Long studentLimit;
 
+    @OneToMany(mappedBy = "project")
+    @JsonManagedReference
+    private List<Document> documents;
+
     public ProjectDto toProjectDto() {
         ProjectDto projectDto = new ProjectDto();
         projectDto.setId(this.id);
         projectDto.setTitle(this.title);
         projectDto.setTerm(((SeniorProject)this.projectType).getTerm());
         projectDto.setYoutubeLink(this.youtubeLink);
-        projectDto.setReportLink(this.reportLink);
         projectDto.setDescription(this.description);
         if (this.group != null) {
             projectDto.setGroupId(this.group.getId().toString());
@@ -119,7 +118,7 @@ public class Project {
         projectDto.setProfessors(professorInformationDtos);
         projectDto.setStudentLimit(this.studentLimit);
         projectDto.setProjectType(this.projectType.getName());
-        projectDto.setImageUrl(this.imageUrl);
+        projectDto.setPoster(this.poster);
         return projectDto;
     }
 
