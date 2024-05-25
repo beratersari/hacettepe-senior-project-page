@@ -119,6 +119,7 @@ public class Project {
         projectDto.setStudentLimit(this.studentLimit);
         projectDto.setProjectType(this.projectType.getName());
         projectDto.setPoster(this.poster);
+        projectDto.setProjectTypeId(this.projectType.getId().toString());
         return projectDto;
     }
 

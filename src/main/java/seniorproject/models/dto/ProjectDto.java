@@ -26,5 +26,5 @@ public class ProjectDto {
     private Long studentLimit;
     private String poster;
     private String embedding;
-
+    private String projectTypeId;
 }

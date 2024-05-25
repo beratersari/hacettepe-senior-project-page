@@ -8,15 +8,16 @@ import seniorproject.core.utilities.results.ErrorDataResult;
 import seniorproject.dataAccess.abstracts.ApplicationDao;
 import seniorproject.dataAccess.abstracts.GroupDao;
 import seniorproject.dataAccess.abstracts.ProjectDao;
+import seniorproject.dataAccess.abstracts.ProjectTypeDao;
 import seniorproject.models.concretes.Application;
 import seniorproject.core.utilities.results.SuccessDataResult;
+import seniorproject.models.concretes.Group;
 import seniorproject.models.concretes.Project;
+import seniorproject.models.concretes.SeniorProject;
 import seniorproject.models.concretes.enums.EProjectStatus;
 import seniorproject.models.concretes.enums.EStatus;
-import seniorproject.models.dto.ApplicationDto;
-import seniorproject.models.dto.ChangeApplicationStatusDto;
-import seniorproject.models.dto.CreateApplicationDto;
-import seniorproject.models.dto.GroupApplicationDto;
+import seniorproject.models.dto.*;
+import seniorproject.models.dto.projectTypeRequests.ActiveSeniorProjectResponseDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,12 +30,15 @@ public class ApplicationManager implements ApplicationService{
     ProjectDao projectDao;
     GroupDao groupDao;
     ApplicationDao applicationDao;
+
+    ProjectTypeDao projectTypeDao;
     @Autowired
-    public ApplicationManager(ProjectDao projectDao, GroupDao groupDao, ApplicationDao applicationDao) {
+    public ApplicationManager(ProjectDao projectDao, GroupDao groupDao, ApplicationDao applicationDao,ProjectTypeDao projectTypeDao) {
         super();
         this.projectDao = projectDao;
         this.groupDao = groupDao;
         this.applicationDao = applicationDao;
+        this.projectTypeDao = projectTypeDao;
     }
 
 
@@ -81,11 +85,30 @@ public class ApplicationManager implements ApplicationService{
 
     @Override
     public DataResult<List<ApplicationDto>> getApplicationsByProfessorId(UUID professorId) {
-        List<Application> applications = applicationDao.findAllByProjectProfessorId(professorId);
+        List<SeniorProject> projectType = projectTypeDao.findActiveProjectType();
+        if (projectType == null) {
+            return new DataResult<>(null, false, "Project type not found");
+        }
+        if(projectType.isEmpty()){
+            return new DataResult<>(null, false, "There is no active senior project");
+        }
+        SeniorProject seniorProject = projectType.get(0);
+        List<Application> applications = applicationDao.findAllByActiveProjectProfessorId(professorId, seniorProject.getId());
         List<ApplicationDto> applicationDtos = new ArrayList<>();
         applications.forEach(application -> applicationDtos.add(application.toApplicationDto()));
         if(applicationDtos.isEmpty())
             return new ErrorDataResult<>(null, "Applications not found");
         return new SuccessDataResult<>(applicationDtos, "Applications retrieved successfully");
+    }
+
+    @Override
+    public DataResult<ApplicationDto> unApplyProject(UnApplyProjectDto unApplyProjectDto) {
+        Group group = groupDao.findByIdAndProjectId(unApplyProjectDto.getStudentId(), unApplyProjectDto.getProjectId());
+        Application application = applicationDao.findByGroupIdAndProjectId(group.getId(), unApplyProjectDto.getProjectId());
+        if (application != null && application.getStatus().equals(EStatus.PENDING)){
+            applicationDao.delete(application);
+            return new SuccessDataResult<>(application.toApplicationDto(), "Application deleted successfully");
+        }
+        return new SuccessDataResult<>(null, "Application not found");
     }
 }

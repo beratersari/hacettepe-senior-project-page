@@ -10,8 +10,6 @@ import seniorproject.models.dto.DocumentDto;
 import seniorproject.models.dto.UploadDocumentDto;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
@@ -33,8 +31,14 @@ public class DocumentController {
     }
 
     @PostMapping("/downloadDocument")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR', 'ROLE_STUDENT')")
     public DataResult<DocumentDto> getDocuments(@RequestBody String documentName) throws IOException {
         return documentService.downloadDocument(documentName);
     }
 
+    @PostMapping("/addGradeDocument")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')")
+    public DataResult<DocumentDto> addGradeDocument(@RequestBody DocumentDto documentDto) {
+        return documentService.addGradeDocument(documentDto);
+    }
 }

@@ -35,6 +35,9 @@ public class TimelineManager implements TimelineService{
             timelineDtos.add(timeline.toTimelineDto());
         }
 
+        if (timelineDtos.isEmpty()) {
+            return new DataResult<>(null, false, "Timeline not found");
+        }
         return new DataResult<>(timelineDtos, true);
     }
 }

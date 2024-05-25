@@ -26,7 +26,6 @@ public class TimelineController {
 
     @PostMapping("/getTimelinesByProjectTypeId")
     public DataResult<List<TimelineDto>> getTimelinesByProjectTypeId(@RequestBody TimelineRequestDto timelineRequestDto) {
-        System.out.println(timelineRequestDto.getProjectTypeId());
         return timelineService.getByProjectTypeId(timelineRequestDto.getProjectTypeId());
     }
 }

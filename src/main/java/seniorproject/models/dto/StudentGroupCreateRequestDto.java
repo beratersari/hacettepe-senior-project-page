@@ -9,5 +9,5 @@ import lombok.Data;
 public class StudentGroupCreateRequestDto {
     private UUID sessionId;
     private String groupName;
-    private List<StudentInformationDto> students;
+    private List<StudentInformationDto> groupMembers;
 }

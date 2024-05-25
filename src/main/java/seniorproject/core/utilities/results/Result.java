@@ -13,6 +13,7 @@ public class Result {
     private long totalElements;
     private int totalPages;
     private int number;
+    private String grade;
     public Result(boolean success) {
         this.success = success;
     }
@@ -21,6 +22,12 @@ public class Result {
         this(success);
         this.message = message;
     }
+
+    public Result(boolean success, String message,String grade) {
+        this(success, message);
+        this.grade = grade;
+    }
+
 
     public Result(boolean success, String message, int pageSize, long totalElements, int totalPages, int number) {
         this(success, message);

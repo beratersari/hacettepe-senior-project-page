@@ -26,18 +26,16 @@ public class ProjectManager implements ProjectService {
     private final ProjectDao projectDao;
     private final ProfessorDao professorDao;
     private final GroupDao groupDao;
-    private final ApplicationDao applicationDao;
     private final ProjectTypeDao projectTypeDao;
     private final KeywordDao keywordDao;
 
 
     @Autowired
-    public ProjectManager(ProjectDao projectDao, ProfessorDao professorDao, GroupDao groupDao, ApplicationDao applicationDao, ProjectTypeDao projectTypeDao, KeywordDao keywordDao) {
+    public ProjectManager(ProjectDao projectDao, ProfessorDao professorDao, GroupDao groupDao, ProjectTypeDao projectTypeDao, KeywordDao keywordDao) {
         super();
         this.projectDao = projectDao;
         this.professorDao = professorDao;
         this.groupDao = groupDao;
-        this.applicationDao = applicationDao;
         this.projectTypeDao = projectTypeDao;
         this.keywordDao = keywordDao;
     }
@@ -81,7 +79,7 @@ public class ProjectManager implements ProjectService {
 
 
     public DataResult<List<ProjectDto>> searchActiveSeniorProjects(int pageNo, int pageSize, UUID sessionId) {
-        Pageable pageable = PageRequest.of(pageNo -1, pageSize);
+        Pageable pageable = PageRequest.of(pageNo -1, pageSize, Sort.by(   "EProjectStatus").ascending());
         List<ProjectType> activeProjectTypes = projectTypeDao.findByActiveness();
 
         List<SeniorProject> activeSeniorProjects = activeProjectTypes.stream()
@@ -90,7 +88,7 @@ public class ProjectManager implements ProjectService {
 
         String activeTerm = "";
         if (activeProjectTypes.isEmpty()) {
-            return new ErrorDataResult<>("No active senior projects found");
+            return new ErrorDataResult<>("No active senior term found");
         }
         else{
             activeTerm = activeSeniorProjects.get(activeProjectTypes.size()-1).getTerm();
@@ -210,8 +208,6 @@ public class ProjectManager implements ProjectService {
         project.setStudentLimit(projectUpdateDto.getStudentLimit());
         projectDao.save(project);
 
-        //projectType.getProjects().add(project);
-
         return new SuccessDataResult<>(project.toProjectDto(), "Project updated.");
     }
 
@@ -276,7 +272,6 @@ public class ProjectManager implements ProjectService {
 
             for (Professor professor : project.getProfessors()) {
                 professors.add(professor.getUsername());
-                System.out.println("professors: " +professor.getUsername());
                 projectDto.setMyProject(professor.getId() == sessionId || projectDto.isMyProject());
             }
 
@@ -286,7 +281,6 @@ public class ProjectManager implements ProjectService {
             else{
                 for (Student student : project.getGroup().getStudents()) {
                     students.add(student.getUsername());
-                    System.out.println("students: " +student.getUsername());
                     projectDto.setMyProject(student.getId() == sessionId || projectDto.isMyProject());
                 }
             }
@@ -295,8 +289,6 @@ public class ProjectManager implements ProjectService {
                 for(StudentInformationDto studentInformationDto : application.toApplicationDto().getGroupMembers()){
                     if(studentInformationDto.getId().equals(sessionId)){
                         applied = true;
-                        System.out.println("applied: " + applied);
-
                         break;
                     }
                 }
@@ -317,7 +309,7 @@ public class ProjectManager implements ProjectService {
 
 
         if (term == null) {
-            return new SuccessDataResult<>(projectDtos, pageSize, totalProjects, projectPage.getTotalPages(), pageNo, null);
+            return new SuccessDataResult<>(projectDtos,pageSize, totalProjects, projectPage.getTotalPages(), pageNo, null);
         }
         return new SuccessDataResult<>(projectDtos, pageSize, totalProjects, projectPage.getTotalPages(), pageNo, term);
     }
