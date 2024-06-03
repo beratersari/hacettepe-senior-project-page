@@ -10,6 +10,7 @@ import seniorproject.models.concretes.enums.ERole;
 import seniorproject.models.dto.AddEmbeddingDto;
 import seniorproject.models.dto.EType;
 import seniorproject.models.dto.ProjectDto;
+import seniorproject.models.dto.UploadPosterDemoLinkWebsiteLinkDto;
 import seniorproject.models.dto.projectRequests.*;
 
 import java.util.Arrays;
@@ -41,12 +42,12 @@ public class ProjectsController {
 
         EType searchType = projectRequestDto.getSearch().getType();
         String searchTerm = projectRequestDto.getSearch().getValue();
-        String sortType = projectRequestDto.getSort().getType();
+        //String sortType = projectRequestDto.getSearch().getType().toString();
         String sortDirection = projectRequestDto.getSort().getDirection();
         int pageNumber = projectRequestDto.getPageNumber();
         int pageSize = projectRequestDto.getPageSize();
         Sort.Direction direction = Sort.Direction.fromString(sortDirection);
-        return projectService.searchAndSortProjects(searchType,searchTerm, sortType, direction, pageNumber, pageSize,sessionId);
+        return projectService.searchAndSortProjects(searchType,searchTerm, "", direction, pageNumber, pageSize,sessionId);
 
     }
 
@@ -70,7 +71,7 @@ public class ProjectsController {
 
     @PostMapping("/getProjectByProjectId")
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    public DataResult<ProjectDto> getProjectByProjectId(UUID projectId) {
+    public DataResult<ProjectDto> getProjectByProjectId(@RequestBody UUID projectId) {
         return this.projectService.getProjectByProjectId(projectId);
     }
 
@@ -104,14 +105,17 @@ public class ProjectsController {
 
     @PostMapping("/addEmbedding")
     public DataResult<ProjectDto> addEmbedding(@RequestBody AddEmbeddingDto embedding){
-        System.out.println("embedding" + embedding.getEmbedding());
         return this.projectService.addEmbedding(embedding);
     }
 
     @PostMapping("/getProjectsWithIds")
     public DataResult<List<ProjectDto>> getProjectsByProjectIdS(@RequestBody ProjectIdsDto projectIds) {
-        System.out.println(projectIds);
         return this.projectService.getProjectsByProjectIds(projectIds.getProjectIds());
     }
 
+    @PostMapping("/uploadPosterDemoLinkWebsiteLink")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public DataResult<ProjectDto> uploadPosterDemoLinkWebsiteLink(@ModelAttribute UploadPosterDemoLinkWebsiteLinkDto uploadPosterDemoLinkWebsiteLinkDto) {
+        return this.projectService.uploadPosterDemoLinkWebsiteLink(uploadPosterDemoLinkWebsiteLinkDto);
+    }
 }

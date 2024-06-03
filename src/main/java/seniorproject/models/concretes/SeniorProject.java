@@ -3,9 +3,12 @@ package seniorproject.models.concretes;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.dto.projectTypeRequests.SeniorProjectDto;
 
 import javax.persistence.*;
+import java.io.IOException;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -28,7 +31,9 @@ public class SeniorProject extends ProjectType{
         seniorProjectDto.setTimelines(this.getTimelines().stream().map(Timeline::getDeliveryName).collect(Collectors.toList()));
         if(this.getProjects() == null)
             return seniorProjectDto;
-        seniorProjectDto.setProjects(this.getProjects().stream().map(Project::toProjectDto).collect(Collectors.toList()));
+        List<ProjectDto> projectDtos = this.getProjects().stream().map(Project::toProjectDto).collect(Collectors.toList());
+
+        seniorProjectDto.setProjects(projectDtos);
         return seniorProjectDto;
     }
 
