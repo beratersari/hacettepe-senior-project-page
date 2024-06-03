@@ -8,6 +8,9 @@ import seniorproject.models.dto.ProfessorInformationDto;
 import seniorproject.models.dto.ProjectDto;
 
 import javax.persistence.*;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -32,15 +35,17 @@ public class Project {
     @JsonBackReference
     private ProjectType projectType;
 
-    @Column(name = "youtube_link")
-    private String youtubeLink;
+    @Column(name = "demo_link")
+    private String demoLink;
 
-    @Column(name ="poster")
-    private String poster;
+    @Column(name ="poster_path")
+    private String posterPath;
+
+    @Column(name = "website_link")
+    private String websiteLink;
 
     @Column(columnDefinition="TEXT")
     private String description;
-
 
     @Column(name = "embedding",columnDefinition="TEXT")
     private String embedding;
@@ -78,12 +83,13 @@ public class Project {
     @JsonManagedReference
     private List<Document> documents;
 
-    public ProjectDto toProjectDto() {
+    public ProjectDto toProjectDto(){
         ProjectDto projectDto = new ProjectDto();
         projectDto.setId(this.id);
         projectDto.setTitle(this.title);
         projectDto.setTerm(((SeniorProject)this.projectType).getTerm());
-        projectDto.setYoutubeLink(this.youtubeLink);
+        projectDto.setDemoLink(this.demoLink);
+        projectDto.setWebsiteLink(this.websiteLink);
         projectDto.setDescription(this.description);
         if (this.group != null) {
             projectDto.setGroupId(this.group.getId().toString());
@@ -118,36 +124,23 @@ public class Project {
         projectDto.setProfessors(professorInformationDtos);
         projectDto.setStudentLimit(this.studentLimit);
         projectDto.setProjectType(this.projectType.getName());
-        projectDto.setPoster(this.poster);
-        return projectDto;
-    }
+        projectDto.setProjectTypeId(this.projectType.getId().toString());
 
-    public ProjectDto toProjectDto(UUID sessionId){
-        ProjectDto projectDto = this.toProjectDto();
-
-        for (Professor professor : this.getProfessors()) {
-            if (professor.getId().equals(sessionId)) {
-                projectDto.setMyProject(true);
+        if (this.posterPath != null) {
+            File file = new File(this.posterPath);
+            try {
+                if (file.exists()) {
+                    byte[] fileContent = Files.readAllBytes(file.toPath());
+                    projectDto.setPoster(fileContent);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
-        if (this.getGroup() == null) {
-            projectDto.setMyProject(projectDto.isMyProject());
         }
         else{
-            for (Student student : this.getGroup().getStudents()) {
-                if (student.getId().equals(sessionId)) {
-                    projectDto.setMyProject(true);
-                }
-            }
+            projectDto.setPoster(null);
         }
-        for (Application application : this.getApplications()) {
-            application.getGroup().getStudents().forEach(student -> {
-                if (student.getId() == sessionId) {
-                    projectDto.setApplied(true);
-                }
-            });
-        }
-        projectDto.setEmbedding(this.getEmbedding());
+
         return projectDto;
     }
 

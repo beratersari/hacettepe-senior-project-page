@@ -17,6 +17,10 @@ import seniorproject.models.dto.projectRequests.ProjectCreateDto;
 import seniorproject.models.dto.projectRequests.ProjectDeleteDto;
 import seniorproject.models.dto.projectRequests.ProjectUpdateDto;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,32 +30,30 @@ public class ProjectManager implements ProjectService {
     private final ProjectDao projectDao;
     private final ProfessorDao professorDao;
     private final GroupDao groupDao;
-    private final ApplicationDao applicationDao;
     private final ProjectTypeDao projectTypeDao;
     private final KeywordDao keywordDao;
 
+    private final ApplicationDao applicationDao;
+    private String posterPath = "../hacettepe-senior-project-page/src/main/java/seniorproject/resources/posters";
+
+
 
     @Autowired
-    public ProjectManager(ProjectDao projectDao, ProfessorDao professorDao, GroupDao groupDao, ApplicationDao applicationDao, ProjectTypeDao projectTypeDao, KeywordDao keywordDao) {
+    public ProjectManager(ProjectDao projectDao, ProfessorDao professorDao, GroupDao groupDao, ProjectTypeDao projectTypeDao, KeywordDao keywordDao, ApplicationDao applicationDao) {
         super();
         this.projectDao = projectDao;
         this.professorDao = professorDao;
         this.groupDao = groupDao;
-        this.applicationDao = applicationDao;
         this.projectTypeDao = projectTypeDao;
         this.keywordDao = keywordDao;
+        this.applicationDao = applicationDao;
     }
 
     public DataResult<List<ProjectDto>> searchAndSortProjects(EType searchType, String searchTerm, String sortType, Sort.Direction sortDirection, int pageNo, int pageSize,UUID sessionId) {
         if(pageNo < 1){
             return new ErrorDataResult<>("Page number cannot be less than 1");
         }
-        Pageable pageable;
-       try{
-           pageable = PageRequest.of(pageNo - 1, pageSize, sortDirection, sortType);
-         }catch (IllegalArgumentException e){
-           pageable = PageRequest.of(pageNo - 1, pageSize, Sort.Direction.ASC, "id");
-       }
+        Pageable pageable = PageRequest.of(pageNo - 1, pageSize);
         Page<Project> projectPage;
         switch (searchType) {
             case TITLE:
@@ -80,8 +82,8 @@ public class ProjectManager implements ProjectService {
     }
 
 
-    public DataResult<List<ProjectDto>> searchActiveSeniorProjects(int pageNo, int pageSize, UUID sessionId) {
-        Pageable pageable = PageRequest.of(pageNo -1, pageSize);
+    public DataResult<List<ProjectDto>> searchActiveSeniorProjects(int pageNo, int pageSize, UUID sessionId){
+        Pageable pageable = PageRequest.of(pageNo -1, pageSize, Sort.by(   "EProjectStatus").ascending());
         List<ProjectType> activeProjectTypes = projectTypeDao.findByActiveness();
 
         List<SeniorProject> activeSeniorProjects = activeProjectTypes.stream()
@@ -90,7 +92,7 @@ public class ProjectManager implements ProjectService {
 
         String activeTerm = "";
         if (activeProjectTypes.isEmpty()) {
-            return new ErrorDataResult<>("No active senior projects found");
+            return new ErrorDataResult<>("No active senior term found");
         }
         else{
             activeTerm = activeSeniorProjects.get(activeProjectTypes.size()-1).getTerm();
@@ -102,7 +104,7 @@ public class ProjectManager implements ProjectService {
 
 
 
-    public DataResult<ProjectDto> getProjectByProjectId(UUID projectId) {
+    public DataResult<ProjectDto> getProjectByProjectId(UUID projectId)  {
         Project project = projectDao.findById(projectId).orElse(null);
         if (project == null) {
             return new ErrorDataResult<>("Project not found.");
@@ -112,7 +114,7 @@ public class ProjectManager implements ProjectService {
     }
 
 
-    public DataResult<ProjectDto> createSeniorProjectByProfessor(ProjectCreateDto projectCreateDto) {
+    public DataResult<ProjectDto> createSeniorProjectByProfessor(ProjectCreateDto projectCreateDto){
         Project project = new Project();
         project.setTitle(projectCreateDto.getTitle());
         project.setDescription(projectCreateDto.getDescription());
@@ -210,8 +212,6 @@ public class ProjectManager implements ProjectService {
         project.setStudentLimit(projectUpdateDto.getStudentLimit());
         projectDao.save(project);
 
-        //projectType.getProjects().add(project);
-
         return new SuccessDataResult<>(project.toProjectDto(), "Project updated.");
     }
 
@@ -221,6 +221,9 @@ public class ProjectManager implements ProjectService {
         if (project == null) {
             return new ErrorDataResult<>("Project not found.");
         }
+
+        List<Application> applications = project.getApplications();
+        applicationDao.deleteAll(applications);
         projectDao.delete(project);
 
         return new SuccessDataResult<>("Project deleted.");
@@ -245,8 +248,36 @@ public class ProjectManager implements ProjectService {
         if (projects == null) {
             return new ErrorDataResult<>("Projects not found.");
         }
-        return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()),  "Project listed.");
+        List<ProjectDto> projectDtos = projects.stream().map(Project::toProjectDto).collect(Collectors.toList());
+        return new SuccessDataResult<>(projectDtos,  "Project listed.");
 
+    }
+
+    @Override
+    public DataResult<ProjectDto> uploadPosterDemoLinkWebsiteLink(UploadPosterDemoLinkWebsiteLinkDto uploadPosterDemoLinkWebsiteLinkDto) {
+        Project project = projectDao.findById(uploadPosterDemoLinkWebsiteLinkDto.getProjectId()).orElse(null);
+        if (project == null) {
+            return new ErrorDataResult<>("Project not found.");
+        }
+
+        project.setDemoLink(uploadPosterDemoLinkWebsiteLinkDto.getDemoLink());
+        project.setWebsiteLink(uploadPosterDemoLinkWebsiteLinkDto.getWebsiteLink());
+
+        String posterPath = this.posterPath + File.separator + project.getId() + ".png";
+        File posterFile = new File(posterPath);
+        try (OutputStream os = Files.newOutputStream(posterFile.toPath())) {
+            if(uploadPosterDemoLinkWebsiteLinkDto.getPosterFile() != null && !uploadPosterDemoLinkWebsiteLinkDto.getPosterFile().isEmpty() && uploadPosterDemoLinkWebsiteLinkDto.getPosterFile().getBytes().length > 0)
+            {
+                os.write(uploadPosterDemoLinkWebsiteLinkDto.getPosterFile().getBytes());
+            }
+        } catch (IOException e) {
+            return new ErrorDataResult<>("Failed to save file: " + e.getMessage());
+        }
+
+        project.setPosterPath(posterPath);
+        projectDao.save(project);
+
+        return new SuccessDataResult<>(project.toProjectDto(), "Poster, demo link and website link uploaded.");
     }
 
     public DataResult<List<ProjectDto>> getProjectByStudentId(UUID studentId) {
@@ -254,13 +285,18 @@ public class ProjectManager implements ProjectService {
         for (Group group : groupDao.findAllByStudentId(studentId)) {
             projects.addAll(projectDao.findAllByGroupId(group.getId()));
         }
+        List<ProjectDto> projectDtos = projects.stream().map(project -> {
+            return project.toProjectDto();
+        }).collect(Collectors.toList());
 
-        return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()), "Projects listed.");
+        return new SuccessDataResult<>(projectDtos, "Projects listed.");
     }
 
     public DataResult<List<ProjectDto>> getProjectByProfessorId(UUID professorId) {
         List<Project> projects = projectDao.findAllByProfessorsId(professorId);
-        return new SuccessDataResult<>(projects.stream().map(Project::toProjectDto).collect(Collectors.toList()), "Projects listed.");
+        List<ProjectDto> projectDtos = projects.stream().map(Project::toProjectDto).collect(Collectors.toList());
+
+        return new SuccessDataResult<>(projectDtos, "Projects listed.");
     }
 
     private DataResult<List<ProjectDto>> getListDataResult(int pageNo, int pageSize, Page<Project> projectPage, String term, UUID sessionId) {
@@ -276,7 +312,6 @@ public class ProjectManager implements ProjectService {
 
             for (Professor professor : project.getProfessors()) {
                 professors.add(professor.getUsername());
-                System.out.println("professors: " +professor.getUsername());
                 projectDto.setMyProject(professor.getId() == sessionId || projectDto.isMyProject());
             }
 
@@ -286,7 +321,6 @@ public class ProjectManager implements ProjectService {
             else{
                 for (Student student : project.getGroup().getStudents()) {
                     students.add(student.getUsername());
-                    System.out.println("students: " +student.getUsername());
                     projectDto.setMyProject(student.getId() == sessionId || projectDto.isMyProject());
                 }
             }
@@ -295,8 +329,6 @@ public class ProjectManager implements ProjectService {
                 for(StudentInformationDto studentInformationDto : application.toApplicationDto().getGroupMembers()){
                     if(studentInformationDto.getId().equals(sessionId)){
                         applied = true;
-                        System.out.println("applied: " + applied);
-
                         break;
                     }
                 }
@@ -317,7 +349,7 @@ public class ProjectManager implements ProjectService {
 
 
         if (term == null) {
-            return new SuccessDataResult<>(projectDtos, pageSize, totalProjects, projectPage.getTotalPages(), pageNo, null);
+            return new SuccessDataResult<>(projectDtos,pageSize, totalProjects, projectPage.getTotalPages(), pageNo, null);
         }
         return new SuccessDataResult<>(projectDtos, pageSize, totalProjects, projectPage.getTotalPages(), pageNo, term);
     }

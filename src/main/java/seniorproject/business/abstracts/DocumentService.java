@@ -11,5 +11,7 @@ import java.util.UUID;
 public interface DocumentService {
     DataResult<DocumentDto> uploadDocument(UploadDocumentDto file) throws IOException;
 
-    DataResult<DocumentDto> downloadDocument(String documentId);
+    DataResult<DocumentDto> downloadDocument(String documentId) throws IOException;
+
+    DataResult<DocumentDto> addGradeDocument(DocumentDto documentDto);
 }

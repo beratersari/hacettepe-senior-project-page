@@ -16,10 +16,7 @@ import seniorproject.models.dto.projectTypeRequests.*;
 import seniorproject.models.concretes.enums.EProjectTypeStatus;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ProjectTypeManager implements ProjectTypeService {
@@ -178,6 +175,37 @@ public class ProjectTypeManager implements ProjectTypeService {
 
         projectTypeDao.save(seniorProject);
 
+        return new DataResult<>(seniorProject.toSeniorProjectDto(), true);
+    }
+
+    @Override
+    public DataResult<SeniorProjectDto> deactivateSeniorProjectTerm(DeactivateSeniorProjectRequest deactivateSeniorProjectRequest) {
+        SeniorProject seniorProject = projectTypeDao.findSeniorProjectById(deactivateSeniorProjectRequest.getId());
+        if (seniorProject == null) {
+            return new DataResult<>(null, false, "Senior project not found");
+        }
+
+        List<SeniorProject> seniorProjects = projectTypeDao.findActiveProjectType();
+
+        if(!seniorProjects.isEmpty()){
+            return new DataResult<>(null, false, "There is already an active senior project, make it ARCHIVED!");
+        }
+
+        seniorProject.setActiveness(EProjectTypeStatus.ACTIVE);
+        for(Project project : seniorProject.getProjects()){
+            project.setEProjectStatus(EProjectStatus.WORKING);
+        }
+
+        projectTypeDao.save(seniorProject);
+        return new DataResult<>(seniorProject.toSeniorProjectDto(), true);
+    }
+
+    @Override
+    public DataResult<SeniorProjectDto> getSeniorProjectWithProjectTypeId(UUID projectTypeId) {
+        SeniorProject seniorProject = projectTypeDao.findSeniorProjectById(projectTypeId);
+        if (seniorProject == null) {
+            return new DataResult<>(null, false, "Senior project not found");
+        }
         return new DataResult<>(seniorProject.toSeniorProjectDto(), true);
     }
 

@@ -5,10 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import seniorproject.business.abstracts.ApplicationService;
 import seniorproject.core.utilities.results.DataResult;
-import seniorproject.models.dto.ApplicationDto;
-import seniorproject.models.dto.ChangeApplicationStatusDto;
-import seniorproject.models.dto.CreateApplicationDto;
-import seniorproject.models.dto.GroupApplicationDto;
+import seniorproject.models.dto.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -42,5 +39,11 @@ public class ApplicationsController {
     @PreAuthorize("hasRole('ROLE_PROFESSOR')")
     public DataResult<List<ApplicationDto>> getApplicationsByProfessorId(@RequestBody UUID professorId) {
         return applicationService.getApplicationsByProfessorId(professorId);
+    }
+
+    @PostMapping("/unApplyProject")
+    @PreAuthorize("hasRole('ROLE_STUDENT')")
+    public DataResult<ApplicationDto> unApplyProject(@RequestBody UnApplyProjectDto unApplyProjectDto) {
+        return applicationService.unApplyProject(unApplyProjectDto);
     }
 }

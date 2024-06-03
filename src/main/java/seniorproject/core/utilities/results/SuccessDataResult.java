@@ -1,5 +1,7 @@
 package seniorproject.core.utilities.results;
 
+import seniorproject.models.dto.DocumentDto;
+
 public class SuccessDataResult<T> extends DataResult<T> {
     public SuccessDataResult(T data, String message) {
         super(data, true, message);
@@ -25,5 +27,7 @@ public class SuccessDataResult<T> extends DataResult<T> {
         super(data, true, message, pageSize, totalElements, totalPages, number);
     }
 
-
+    public SuccessDataResult(T data, String message, String grade) {
+        super(data, true, message, grade);
+    }
 }

@@ -3,9 +3,11 @@ import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import seniorproject.models.concretes.enums.EStatus;
 import seniorproject.models.dto.ApplicationDto;
+import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.dto.StudentInformationDto;
 
 import javax.persistence.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

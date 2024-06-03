@@ -10,8 +10,7 @@ public class ProjectDto {
     private UUID id;
     private String title;
     private String term;
-    private String youtubeLink;
-    private String reportLink;
+    private String demoLink;
     private String description;
     private String groupId;
     private List<UUID> applicationIds;
@@ -19,12 +18,12 @@ public class ProjectDto {
     private boolean applied;
     private boolean myProject;
     private String ProjectType;
-    //private List<String> authorNames = new ArrayList<>();
     private List<String> students = new ArrayList<>();
     private List<ProfessorInformationDto> professors = new ArrayList<>();
     private List<String> keywords = new ArrayList<>();
     private Long studentLimit;
-    private String poster;
+    private byte[] poster;
+    private String websiteLink;
     private String embedding;
-
+    private String projectTypeId;
 }

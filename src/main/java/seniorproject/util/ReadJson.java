@@ -160,7 +160,7 @@ public class ReadJson {
 
 
 
-                    project.setYoutubeLink(youtubeLink);
+                    project.setDemoLink(youtubeLink);
                     project.setDescription(abstractText);
                     project.setEProjectStatus(EProjectStatus.WORKING);
 
@@ -374,12 +374,12 @@ public class ReadJson {
 
                         project.setKeywords(keywordList);
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, project_type_id, youtube_link,poster, group_id,eproject_status,description) VALUES (?, ?, ?, ?, ?, ?,?,?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, project_type_id, youtube_link,poster_path, group_id,eproject_status,description) VALUES (?, ?, ?, ?, ?, ?,?,?)");
                         preparedStatement.setObject(1, project.getId());
                         preparedStatement.setString(2, project.getTitle());
                         preparedStatement.setObject(3, project.getProjectType().getId());
-                        preparedStatement.setString(4, project.getYoutubeLink());
-                        preparedStatement.setString(5, project.getPoster());
+                        preparedStatement.setString(4, project.getDemoLink());
+                        preparedStatement.setString(5, project.getPosterPath());
                         preparedStatement.setObject(6, group.getId());
                         preparedStatement.setString(7, String.valueOf(project.getEProjectStatus()));
                         preparedStatement.setString(8, project.getDescription());

@@ -3,9 +3,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import seniorproject.models.dto.GroupDto;
+import seniorproject.models.dto.ProjectDto;
 import seniorproject.models.dto.StudentInformationDto;
 
 import javax.persistence.*;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -58,7 +60,10 @@ public class Group {
             groupDto.setApplications(this.applications.stream().map(Application::toApplicationDto).collect(Collectors.toList()));
         }
         if(this.projects != null){
-            groupDto.setProjects(this.projects.stream().map(Project::toProjectDto).collect(Collectors.toList()));
+            List<ProjectDto> projectDtos = projects.stream().map(project -> {
+                return project.toProjectDto();
+            }).collect(Collectors.toList());
+            groupDto.setProjects(projectDtos);
         }
         return groupDto;
     }

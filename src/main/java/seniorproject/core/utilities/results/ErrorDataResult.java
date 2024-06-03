@@ -16,4 +16,8 @@ public class ErrorDataResult<T> extends DataResult<T>{
     public ErrorDataResult() {
         super(null, false);
     }
+
+    public ErrorDataResult(T data, String message, String grade) {
+        super(data, false, message, grade);
+    }
 }

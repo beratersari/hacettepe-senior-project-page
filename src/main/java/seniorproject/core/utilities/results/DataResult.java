@@ -16,9 +16,16 @@ public class DataResult<T> extends Result{
         this.data = data;
     }
 
+    public DataResult(T data, boolean success, String message, String grade) {
+        super(success, message, grade);
+        this.data = data;
+    }
+
     public DataResult(T data, boolean success, String message, int pageSize, long totalElements, int totalPages, int number) {
         super(success, message, pageSize, totalElements, totalPages, number);
         this.data = data;
     }
+
+
 
 }

@@ -26,7 +26,9 @@ public class Document {
 
     private Long size;
     private Date uploadDate;
-    private byte[] data;
+
+    @Column(name = "grade")
+    private String grade;
 
     @Column(nullable = false, unique = true)
     private String documentName;
@@ -34,10 +36,10 @@ public class Document {
     public DocumentDto toDocumentDto() {
         DocumentDto documentDto = new DocumentDto();
         documentDto.setId(this.id);
-        documentDto.setFile(this.data);
         documentDto.setDeliveryDate(this.timeline.getDeliveryDate());
         documentDto.setDeliveryName(this.timeline.getDeliveryName());
         documentDto.setProjectId(this.project.getId());
+        documentDto.setGrade(this.grade);
         documentDto.setDocumentName(this.documentName);
         return documentDto;
     }

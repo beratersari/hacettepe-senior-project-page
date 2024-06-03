@@ -8,6 +8,7 @@ import seniorproject.core.utilities.results.DataResult;
 import seniorproject.models.dto.projectTypeRequests.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
@@ -65,5 +66,14 @@ public class ProjectTypeController {
         return projectTypeService.editSeniorProjectTerm(editSeniorProjectRequest);
     }
 
-    // ADD DELETE API IN NEXT
+    @PostMapping("/deactivateSeniorProjectTerm")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    public DataResult<SeniorProjectDto> deactivateSeniorProjectTerm(@RequestBody DeactivateSeniorProjectRequest deactivateSeniorProjectRequest) {
+        return projectTypeService.deactivateSeniorProjectTerm(deactivateSeniorProjectRequest);
+    }
+
+    @PostMapping("/getSeniorProjectWithProjectTypeId")
+    public DataResult<SeniorProjectDto> getSeniorProjectWithProjectTypeId(@RequestBody UUID projectTypeId) {
+        return projectTypeService.getSeniorProjectWithProjectTypeId(projectTypeId);
+    }
 }

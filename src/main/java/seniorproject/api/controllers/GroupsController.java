@@ -29,7 +29,6 @@ public class GroupsController {
     @PostMapping("/getGroupsByStudentId")
     @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_PROFESSOR')")
     public DataResult<List<GroupDto>> getGroupByStudentId(@RequestBody UUID studentId) {
-        System.out.println("student ıd:" + studentId);
         return this.groupService.getGroupByStudentId(studentId);
     }
 

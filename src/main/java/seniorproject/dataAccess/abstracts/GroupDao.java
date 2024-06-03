@@ -14,4 +14,6 @@ public interface GroupDao extends JpaRepository<Group, UUID>{
     List<Group> findAllByStudentId(@Param("studentId") UUID studentId);
 
 
+    @Query("SELECT g FROM Student s left JOIN s.groups g left join g.applications a WHERE s.id = :studentId and a.project.id = :projectId")
+    Group findByIdAndProjectId(UUID studentId, UUID projectId);
 }
