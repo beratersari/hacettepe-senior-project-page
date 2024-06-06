@@ -10,4 +10,5 @@ public class TimelineDto {
     private UUID id;
     private Date deliveryDate;
     private String deliveryName;
+    private String term;
 }

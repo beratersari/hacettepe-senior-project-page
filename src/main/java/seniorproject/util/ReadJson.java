@@ -123,28 +123,30 @@ public class ReadJson {
                             List<Timeline> timelines = new ArrayList<>();
                             Timeline timeline = new Timeline();
                             timeline.setId(generateGeneralId());
-                            timeline.setDeliveryDate(java.sql.Date.valueOf("2023-10-30"));
+                            String year_one = projectTerm.split("-")[0];
+                            String year_two = projectTerm.split("-")[1];
+                            timeline.setDeliveryDate(java.sql.Date.valueOf(year_one +"-10-30"));
                             timeline.setDeliveryName("Project Proposal");
                             timeline.setProjectType(seniorProject);
                             timelines.add(timeline);
 
                             timeline = new Timeline();
                             timeline.setId(generateGeneralId());
-                            timeline.setDeliveryDate(java.sql.Date.valueOf("2024-01-06"));
+                            timeline.setDeliveryDate(java.sql.Date.valueOf(year_two+"-01-06"));
                             timeline.setDeliveryName("End Of Term Development Report");
                             timeline.setProjectType(seniorProject);
                             timelines.add(timeline);
 
                             timeline = new Timeline();
                             timeline.setId(generateGeneralId());
-                            timeline.setDeliveryDate(java.sql.Date.valueOf("2024-04-15"));
+                            timeline.setDeliveryDate(java.sql.Date.valueOf(year_two+"-04-15"));
                             timeline.setDeliveryName("Term Study Plan");
                             timeline.setProjectType(seniorProject);
                             timelines.add(timeline);
 
                             timeline = new Timeline();
                             timeline.setId(generateGeneralId());
-                            timeline.setDeliveryDate(java.sql.Date.valueOf("2024-06-30"));
+                            timeline.setDeliveryDate(java.sql.Date.valueOf(year_two+"-06-30"));
                             timeline.setDeliveryName("End Of Project");
                             timeline.setProjectType(seniorProject);
                             timelines.add(timeline);

@@ -61,7 +61,7 @@ public class ProjectsController {
     }
 
     @PostMapping("/getActiveSeniorProjects")
-    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_PROFESSOR')")
+    @PreAuthorize("hasAnyRole('ROLE_STUDENT', 'ROLE_PROFESSOR','ROLE_ADMIN')")
     public DataResult<List<ProjectDto>> getActiveSeniorProjects(@RequestBody ProjectWithTypesRequestDto projectWithTypesRequest) {
         int pageNumber = projectWithTypesRequest.getPageNumber();
         int pageSize = projectWithTypesRequest.getPageSize();

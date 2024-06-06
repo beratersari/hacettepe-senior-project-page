@@ -31,6 +31,8 @@ public class Timeline {
         timelineDto.setId(this.id);
         timelineDto.setDeliveryName(this.deliveryName);
         timelineDto.setDeliveryDate(this.deliveryDate);
+        SeniorProject seniorProject = (SeniorProject) projectType;
+        timelineDto.setTerm((seniorProject.getTerm()));
         return timelineDto;
     }
 }

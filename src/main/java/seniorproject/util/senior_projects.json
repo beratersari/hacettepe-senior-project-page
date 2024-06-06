@@ -744,19 +744,6 @@
         "keywords": ["Guidance Drone","Visually Impaired People","Deep Learning","AI","Computer Vision"]
     },
     {
-        "project_name": "",
-        "students": [
-        ],
-        "supervisor": [
-        ],
-        "youtube_link": "",
-        "abstract": "",
-        "report_link": "",
-        "project_term": "",
-        "id": 43,
-        "keywords": []
-    },
-    {
         "project_name": "Tomayto Tomahto",
         "students": [
             "Kutay Barçin",
@@ -1139,4 +1126,5 @@
         "id": 65,
         "keywords": ["Deep Embeddings","Web Page Similarity","Siamese Networks","Web Page Layout"]
     }
+
 ]

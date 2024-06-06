@@ -22,4 +22,5 @@ public interface ApplicationDao extends JpaRepository<Application, UUID> {
 
     @Query("SELECT a FROM Application a LEFT JOIN a.group g WHERE a.group.id = :groupId and a.project.id = :projectId")
     Application findByGroupIdAndProjectId(UUID groupId, UUID projectId);
+
 }

@@ -57,15 +57,15 @@ public class ProjectManager implements ProjectService {
         Page<Project> projectPage;
         switch (searchType) {
             case TITLE:
-                projectPage = projectDao.findByTitleContainingIgnoreCase(searchTerm, pageable);
+                projectPage = projectDao.findByTitleContainingIgnoreCase(searchTerm.toLowerCase(), pageable);
                 break;
 
             case AUTHORS:
-                projectPage = projectDao.findByAuthorNameContainingIgnoreCase(searchTerm, pageable);
+                projectPage = projectDao.findByAuthorNameContainingIgnoreCase(searchTerm.toLowerCase(), pageable);
                 break;
 
             case KEYWORDS:
-                projectPage = projectDao.findByKeywordsContainingIgnoreCase(searchTerm, pageable);
+                projectPage = projectDao.findByKeywordsContainingIgnoreCase(searchTerm.toLowerCase(), pageable);
                 break;
 
             default:
@@ -204,6 +204,7 @@ public class ProjectManager implements ProjectService {
         project.setProfessors(professors);
         if(projectUpdateDto.getGroupId() == null){
             project.setGroup(null);
+            project.setEProjectStatus(EProjectStatus.OFFERED);
         }
         else {
             Group group = groupDao.findById(projectUpdateDto.getGroupId()).orElse(null);
