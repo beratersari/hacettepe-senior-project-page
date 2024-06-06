@@ -8,4 +8,7 @@ import java.util.UUID;
 
 public interface TimelineDao extends JpaRepository<Timeline, UUID>{
     List<Timeline> getByProjectTypeId(UUID projectTypeId);
+
+    Timeline getById(UUID timelineId);
+
 }

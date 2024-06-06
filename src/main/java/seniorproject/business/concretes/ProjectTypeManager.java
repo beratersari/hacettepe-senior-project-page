@@ -159,13 +159,19 @@ public class ProjectTypeManager implements ProjectTypeService {
 
         List<Timeline> timelines = new ArrayList<>();
 
-        timelineDao.deleteAll(seniorProject.getTimelines());
-
         for (TimelineDto timelineDto : editSeniorProjectRequest.getTimelines()) {
-            Timeline timeline = new Timeline();
+            Timeline timeline;
+            if (timelineDto.getId() != null) {
+                timeline = timelineDao.getById(timelineDto.getId());
+                if (timeline == null) {
+                    throw new IllegalArgumentException("Timeline not found with ID: " + timelineDto.getId());
+                }
+            } else {
+                timeline = new Timeline();
+                timeline.setProjectType(seniorProject);
+            }
             timeline.setDeliveryDate(timelineDto.getDeliveryDate());
             timeline.setDeliveryName(timelineDto.getDeliveryName());
-            timeline.setProjectType(seniorProject);
             timelines.add(timeline);
         }
 

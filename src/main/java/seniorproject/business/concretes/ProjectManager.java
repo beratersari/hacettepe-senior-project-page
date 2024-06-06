@@ -260,7 +260,7 @@ public class ProjectManager implements ProjectService {
         if (project == null) {
             return new ErrorDataResult<>("Project not found.");
         }
-
+        System.out.println(uploadPosterDemoLinkWebsiteLinkDto);
         project.setDemoLink(uploadPosterDemoLinkWebsiteLinkDto.getDemoLink());
         project.setWebsiteLink(uploadPosterDemoLinkWebsiteLinkDto.getWebsiteLink());
 
