@@ -162,7 +162,12 @@ public class ReadJson {
 
                     project.setDemoLink(youtubeLink);
                     project.setDescription(abstractText);
-                    project.setEProjectStatus(EProjectStatus.WORKING);
+                    if(Objects.equals(projectTerm, "2022-2023")){
+                        project.setEProjectStatus(EProjectStatus.WORKING);
+                    }
+                    else{
+                        project.setEProjectStatus(EProjectStatus.ARCHIVED);
+                    }
 
 
 
@@ -374,7 +379,7 @@ public class ReadJson {
 
                         project.setKeywords(keywordList);
 
-                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, project_type_id, youtube_link,poster_path, group_id,eproject_status,description) VALUES (?, ?, ?, ?, ?, ?,?,?)");
+                        preparedStatement = connection.prepareStatement("INSERT INTO projects (project_id, title, project_type_id, demo_link,poster_path, group_id,eproject_status,description) VALUES (?, ?, ?, ?, ?, ?,?,?)");
                         preparedStatement.setObject(1, project.getId());
                         preparedStatement.setString(2, project.getTitle());
                         preparedStatement.setObject(3, project.getProjectType().getId());

@@ -70,7 +70,6 @@ public class ProjectsController {
     }
 
     @PostMapping("/getProjectByProjectId")
-    @PreAuthorize("hasRole('ROLE_STUDENT')")
     public DataResult<ProjectDto> getProjectByProjectId(@RequestBody UUID projectId) {
         return this.projectService.getProjectByProjectId(projectId);
     }

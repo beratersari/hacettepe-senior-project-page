@@ -91,6 +91,7 @@ public class Project {
         projectDto.setDemoLink(this.demoLink);
         projectDto.setWebsiteLink(this.websiteLink);
         projectDto.setDescription(this.description);
+        projectDto.setEmbedding(this.embedding);
         if (this.group != null) {
             projectDto.setGroupId(this.group.getId().toString());
         }

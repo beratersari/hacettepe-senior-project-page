@@ -79,6 +79,7 @@ public class SecurityConfiguration {
                 .antMatchers("/api/urlAndImages/getUrlAndImages").permitAll()
                 .antMatchers("/api/timeline/getTimelinesByProjectTypeId").permitAll()
                 .antMatchers("/api/projectTypes/getActiveSeniorProjectTerm").permitAll()
+                .antMatchers("/api/projects/getProjectByProjectId").permitAll()
                 .antMatchers("/api/test/**").permitAll()
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .anyRequest().authenticated();
